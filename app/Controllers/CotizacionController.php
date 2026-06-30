@@ -93,4 +93,48 @@ public function store()
     ]);
 }
 
+
+public function update()
+{
+    $id = $_GET['id'] ?? null;
+
+    if (!$id) {
+
+        http_response_code(400);
+
+        echo json_encode([
+            'mensaje' => 'ID requerido'
+        ]);
+
+        return;
+    }
+
+    $data = json_decode(
+        file_get_contents('php://input'),
+        true
+    );
+
+    $cotizacion = new Cotizacion();
+
+    $actualizado = $cotizacion->actualizar(
+        $id,
+        $data
+    );
+
+    if (!$actualizado) {
+
+        http_response_code(404);
+
+        echo json_encode([
+            'mensaje' => 'Cotizacion no encontrada'
+        ]);
+
+        return;
+    }
+
+    echo json_encode([
+        'mensaje' => 'Cotizacion actualizada correctamente'
+    ]);
+}
+
 }

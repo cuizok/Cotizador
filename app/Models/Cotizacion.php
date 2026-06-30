@@ -67,4 +67,35 @@ class Cotizacion extends Model
 
         return $this->db->lastInsertId();
     }
+    
+
+    public function actualizar($id, array $data)
+    {
+        $sql = "
+            UPDATE cotizaciones
+            SET
+                id_cliente = :id_cliente,
+                titulo = :titulo,
+                descripcion = :descripcion,
+                estatus = :estatus,
+                costo_total = :costo_total,
+                tiempo_total_minutos = :tiempo_total_minutos,
+                updated_at = NOW()
+            WHERE id = :id
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $id,
+            'id_cliente' => $data['id_cliente'],
+            ':titulo' => $data['titulo'],
+            ':descripcion' => $data['descripcion'],
+            ':estatus' => $data['estatus'],
+            ':costo_total' => $data['costo_total'],
+            ':tiempo_total_minutos' => $data['tiempo_total_minutos']
+        ]);
+
+        return $stmt->rowCount() > 0;
+    }
 }
