@@ -98,4 +98,38 @@ class Cotizacion extends Model
 
         return $stmt->rowCount() > 0;
     }
+
+    public function recalcularCostoTotal($idCotizacion)
+    {
+        // Obtener la suma de todos los costos
+        $sql = "
+            SELECT COALESCE(SUM(costo), 0) AS total
+            FROM detalle_cotizacion
+            WHERE id_cotizacion = :id
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $idCotizacion
+        ]);
+
+        $total = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+        // Actualizar la cotización
+        $sql = "
+            UPDATE cotizaciones
+            SET
+                costo_total = :total,
+                updated_at = NOW()
+            WHERE id = :id
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            ':total' => $total,
+            ':id' => $idCotizacion
+        ]);
+    }
 }

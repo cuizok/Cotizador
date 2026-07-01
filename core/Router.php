@@ -29,7 +29,18 @@ class Router
 
 public function dispatch()
 {
-    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+   $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+    // Elimina el prefijo del proyecto
+    $basePath = '/Blackcore/Cotizador/public';
+    // verificar si este if es compatible con la versión de PHP XAMPP APACHE
+    if (strpos($uri, $basePath) === 0) {
+        $uri = substr($uri, strlen($basePath));
+    }
+
+    if ($uri === '') {
+        $uri = '/';
+    }
 
     $method = $_SERVER['REQUEST_METHOD'];
 

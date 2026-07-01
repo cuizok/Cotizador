@@ -1,9 +1,15 @@
 <?php
-
+require_once __DIR__ . '/../../core/Middleware.php';
 require_once __DIR__.'/../Models/Cotizacion.php';
 
 class CotizacionController
 {
+
+    public function __construct()
+    {
+        Middleware::auth();
+    }
+
     // Funcion para obtener todos los registros
     public function index()
     {

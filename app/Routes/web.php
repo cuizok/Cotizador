@@ -1,46 +1,59 @@
 <?php
-// SECCION DE CLIENTES
-// ----------------------------------------------------------------------------------
 
-$router->get('/Blackcore/Cotizador/public/index.php','ClienteController@index');
+// ======================================================
+// CLIENTES
+// ======================================================
 
-$router->get('/Blackcore/Cotizador/public/clienteById','ClienteController@show');
+$router->get('/ClienteAll', 'ClienteController@index');
 
-$router->post('/Blackcore/Cotizador/public/Insert-cliente','ClienteController@store');
+$router->get('/clienteById', 'ClienteController@show');
 
-$router->put('/Blackcore/Cotizador/public/Update-cliente','ClienteController@update');
+$router->post('/Insert-cliente', 'ClienteController@store');
 
-$router->put('/Blackcore/Cotizador/public/delete-cliente','ClienteController@delete');
+$router->put('/Update-cliente', 'ClienteController@update');
 
-// SECCION DE COTIZACIONES 
-// ----------------------------------------------------------------------------------
-
-$router->get('/Blackcore/Cotizador/public/CotizacionAll','CotizacionController@index');
-
-$router->get('/Blackcore/Cotizador/public/CotizacionById','CotizacionController@show');
-
-$router->post('/Blackcore/Cotizador/public/Insert-Cotizacion','CotizacionController@store');
-
-$router->put('/Blackcore/Cotizador/public/Update-Cotizacion','CotizacionController@update');
-
-// SECCION DE DETALLES
-// --------------------------------------------------------------------------------------
-
-$router->post('/Blackcore/Cotizador/public/Insert-Detalle','DetalleCotizacionController@store');
-
-$router->get('/Blackcore/Cotizador/public/DetalleByCotizacion','DetalleCotizacionController@show');
-
-$router->put('/Blackcore/Cotizador/public/Update-DetalleCotizacion','DetalleCotizacionController@update');
-
-$router->delete('/Blackcore/Cotizador/public/Delete-DetalleCotizacion','DetalleCotizacionController@delete');
+$router->put('/delete-cliente', 'ClienteController@delete');
 
 
-// SECCION DE AUTENTICACIÓN Y LOGIN
-// --------------------------------------------------------------------------------------
+// ======================================================
+// COTIZACIONES
+// ======================================================
+
+$router->get('/CotizacionAll', 'CotizacionController@index');
+
+$router->get('/CotizacionById', 'CotizacionController@show');
+
+$router->post('/Insert-Cotizacion', 'CotizacionController@store');
+
+$router->put('/Update-Cotizacion', 'CotizacionController@update');
 
 
-$router->post('/Blackcore/Cotizador/public/Login','AuthController@login');
+// ======================================================
+// DETALLE COTIZACIÓN
+// ======================================================
 
-$router->get('/Blackcore/Cotizador/public/Session','AuthController@session');
+$router->post('/Insert-Detalle', 'DetalleCotizacionController@store');
 
-$router->post('/Blackcore/Cotizador/public/Logout','AuthController@logout');
+$router->get('/DetalleByCotizacion', 'DetalleCotizacionController@show');
+
+$router->put('/Update-DetalleCotizacion', 'DetalleCotizacionController@update');
+
+$router->delete('/Delete-DetalleCotizacion', 'DetalleCotizacionController@delete');
+
+
+// ======================================================
+// AUTENTICACIÓN
+// ======================================================
+
+$router->post('/Login', 'AuthController@login');
+
+$router->get('/Session', 'AuthController@session');
+
+$router->post('/Logout', 'AuthController@logout');
+
+
+// ======================================================
+// VISTAS
+// ======================================================
+
+$router->get('/login', 'AuthController@viewLogin');

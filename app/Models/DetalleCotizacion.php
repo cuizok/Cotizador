@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../core/Model.php';
+require_once __DIR__ . '/Cotizacion.php';
 
 class DetalleCotizacion extends Model
 {
@@ -15,7 +16,6 @@ class DetalleCotizacion extends Model
                 costo,
                 tiempo,
                 unidad_tiempo
-
             )
             VALUES
             (
@@ -37,19 +37,24 @@ class DetalleCotizacion extends Model
             ':costo' => $data['costo'],
             ':tiempo' => $data['tiempo'],
             ':unidad_tiempo' => $data['unidad_tiempo']
-
-
         ]);
+
+        $cotizacion = new Cotizacion();
+
+        $cotizacion->recalcularCostoTotal(
+            $data['id_cotizacion']
+        );
 
         return $this->db->lastInsertId();
     }
-    
-       public function obtenerPorId($id_cotizacion)
+
+    public function obtenerPorId($id_cotizacion)
     {
         $sql = "
             SELECT *
             FROM detalle_cotizacion
             WHERE id_cotizacion = :id_cotizacion
+            ORDER BY id ASC
         ";
 
         $stmt = $this->db->prepare($sql);
@@ -58,11 +63,13 @@ class DetalleCotizacion extends Model
             ':id_cotizacion' => $id_cotizacion
         ]);
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-        public function actualizar($id_cotizacion, array $data)
+    public function actualizar($id, array $data)
     {
+        $idCotizacion = $this->obtenerIdCotizacion($id);
+
         $sql = "
             UPDATE detalle_cotizacion
             SET
@@ -72,26 +79,33 @@ class DetalleCotizacion extends Model
                 tiempo = :tiempo,
                 unidad_tiempo = :unidad_tiempo,
                 updated_at = NOW()
-            WHERE id_cotizacion = :id_cotizacion
+            WHERE id = :id
         ";
 
         $stmt = $this->db->prepare($sql);
 
         $stmt->execute([
-            ':id_cotizacion' => $id_cotizacion,
+            ':id' => $id,
             ':servicio' => $data['servicio'],
             ':descripcion' => $data['descripcion'],
             ':costo' => $data['costo'],
             ':tiempo' => $data['tiempo'],
-            ':unidad_tiempo' => $data['unidad_tiempo'],
-
+            ':unidad_tiempo' => $data['unidad_tiempo']
         ]);
+
+        $cotizacion = new Cotizacion();
+
+        $cotizacion->recalcularCostoTotal(
+            $idCotizacion
+        );
 
         return $stmt->rowCount() > 0;
     }
 
     public function eliminar($id)
     {
+        $idCotizacion = $this->obtenerIdCotizacion($id);
+
         $sql = "
             DELETE
             FROM detalle_cotizacion
@@ -104,7 +118,29 @@ class DetalleCotizacion extends Model
             ':id' => $id
         ]);
 
+        $cotizacion = new Cotizacion();
+
+        $cotizacion->recalcularCostoTotal(
+            $idCotizacion
+        );
+
         return $stmt->rowCount() > 0;
     }
 
+    public function obtenerIdCotizacion($id)
+    {
+        $sql = "
+            SELECT id_cotizacion
+            FROM detalle_cotizacion
+            WHERE id = :id
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $id
+        ]);
+
+        return $stmt->fetchColumn();
+    }
 }

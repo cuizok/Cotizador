@@ -1,9 +1,17 @@
 <?php
 
 require_once __DIR__.'/../Models/Usuario.php';
+require_once __DIR__.'/../Views/Auth/login.php';
 
 class AuthController
 {
+
+    public function viewLogin() 
+    {
+        require_once __DIR__ . '/../Views/Auth/login.php';
+    }
+
+    
         public function login()
     {
         session_start();

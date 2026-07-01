@@ -1,9 +1,14 @@
 <?php
-
+require_once __DIR__ . '/../../core/Middleware.php';
 require_once __DIR__.'/../Models/DetalleCotizacion.php';
 
 class DetalleCotizacionController
 {
+
+    public function __construct()
+    {
+        Middleware::auth();
+    }
     
     public function store()
     {
@@ -80,9 +85,9 @@ class DetalleCotizacionController
     
     public function update()
     {
-        $id_cotizacion = $_GET['id_cotizacion'] ?? null;
+       $id = $_GET['id'] ?? null;
 
-        if (!$id_cotizacion) {
+        if (!$id) {
 
             http_response_code(400);
 
@@ -101,7 +106,7 @@ class DetalleCotizacionController
         $cotizacionDetalle = new DetalleCotizacion();
 
         $actualizado = $cotizacionDetalle->actualizar(
-            $id_cotizacion,
+            $id,
             $data
         );
 

@@ -1,9 +1,16 @@
 <?php
-
+require_once __DIR__ . '/../../core/Middleware.php';
 require_once __DIR__ . '/../Models/Cliente.php';
 
 class ClienteController
 {
+
+    public function __construct()
+    {
+        Middleware::auth();
+    }
+
+
     public function index()
     {
         $cliente = new Cliente();
@@ -18,152 +25,152 @@ class ClienteController
         );
     }
 
-public function show()
-{
-    $id = $_GET['id'] ?? null;
+    public function show()
+    {
+        $id = $_GET['id'] ?? null;
 
-    if (!$id) {
+        if (!$id) {
 
-        http_response_code(400);
+            http_response_code(400);
 
-        echo json_encode([
-            'mensaje' => 'ID requerido'
-        ]);
+            echo json_encode([
+                'mensaje' => 'ID requerido'
+            ]);
 
-        return;
+            return;
+        }
+
+        $cliente = new Cliente();
+
+        $registro = $cliente->obtenerPorId($id);
+
+        header('Content-Type: application/json');
+
+        if (!$registro) {
+
+            http_response_code(404);
+
+            echo json_encode([
+                'mensaje' => 'Cliente no encontrado'
+            ]);
+
+            return;
+        }
+
+        echo json_encode(
+            $registro,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+        );
     }
 
-    $cliente = new Cliente();
+    public function store()
+    {
+        $data = json_decode(
+            file_get_contents('php://input'),
+            true
+        );
 
-    $registro = $cliente->obtenerPorId($id);
+        if (
+            empty($data['nombre']) ||
+            empty($data['correo'])
+        ) {
 
-    header('Content-Type: application/json');
+            http_response_code(400);
 
-    if (!$registro) {
+            echo json_encode([
+                'mensaje' => 'Nombre y correo son obligatorios'
+            ]);
 
-        http_response_code(404);
+            return;
+        }
 
-        echo json_encode([
-            'mensaje' => 'Cliente no encontrado'
-        ]);
+        $cliente = new Cliente();
 
-        return;
-    }
+        $id = $cliente->crear($data);
 
-    echo json_encode(
-        $registro,
-        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
-    );
-}
-
-public function store()
-{
-    $data = json_decode(
-        file_get_contents('php://input'),
-        true
-    );
-
-    if (
-        empty($data['nombre']) ||
-        empty($data['correo'])
-    ) {
-
-        http_response_code(400);
+        http_response_code(201);
 
         echo json_encode([
-            'mensaje' => 'Nombre y correo son obligatorios'
+            'mensaje' => 'Cliente creado correctamente',
+            'id' => $id
         ]);
-
-        return;
     }
 
-    $cliente = new Cliente();
+    public function update()
+    {
+        $id = $_GET['id'] ?? null;
 
-    $id = $cliente->crear($data);
+        if (!$id) {
 
-    http_response_code(201);
+            http_response_code(400);
 
-    echo json_encode([
-        'mensaje' => 'Cliente creado correctamente',
-        'id' => $id
-    ]);
-}
+            echo json_encode([
+                'mensaje' => 'ID requerido'
+            ]);
 
-public function update()
-{
-    $id = $_GET['id'] ?? null;
+            return;
+        }
 
-    if (!$id) {
+        $data = json_decode(
+            file_get_contents('php://input'),
+            true
+        );
 
-        http_response_code(400);
+        $cliente = new Cliente();
+
+        $actualizado = $cliente->actualizar(
+            $id,
+            $data
+        );
+
+        if (!$actualizado) {
+
+            http_response_code(404);
+
+            echo json_encode([
+                'mensaje' => 'Cliente no encontrado'
+            ]);
+
+            return;
+        }
 
         echo json_encode([
-            'mensaje' => 'ID requerido'
+            'mensaje' => 'Cliente actualizado correctamente'
         ]);
-
-        return;
     }
 
-    $data = json_decode(
-        file_get_contents('php://input'),
-        true
-    );
+    public function delete()
+    {
+        $id = $_GET['id'] ?? null;
 
-    $cliente = new Cliente();
+        if (!$id) {
 
-    $actualizado = $cliente->actualizar(
-        $id,
-        $data
-    );
+            http_response_code(400);
 
-    if (!$actualizado) {
+            echo json_encode([
+                'mensaje' => 'ID requerido'
+            ]);
 
-        http_response_code(404);
+            return;
+        }
+
+        $cliente = new Cliente();
+
+        $resultado = $cliente->desactivar($id);
+
+        if (!$resultado) {
+
+            http_response_code(404);
+
+            echo json_encode([
+                'mensaje' => 'Cliente no encontrado'
+            ]);
+
+            return;
+        }
 
         echo json_encode([
-            'mensaje' => 'Cliente no encontrado'
+            'mensaje' => 'Cliente desactivado correctamente'
         ]);
-
-        return;
     }
-
-    echo json_encode([
-        'mensaje' => 'Cliente actualizado correctamente'
-    ]);
-}
-
-public function delete()
-{
-    $id = $_GET['id'] ?? null;
-
-    if (!$id) {
-
-        http_response_code(400);
-
-        echo json_encode([
-            'mensaje' => 'ID requerido'
-        ]);
-
-        return;
-    }
-
-    $cliente = new Cliente();
-
-    $resultado = $cliente->desactivar($id);
-
-    if (!$resultado) {
-
-        http_response_code(404);
-
-        echo json_encode([
-            'mensaje' => 'Cliente no encontrado'
-        ]);
-
-        return;
-    }
-
-    echo json_encode([
-        'mensaje' => 'Cliente desactivado correctamente'
-    ]);
-}
 }
