@@ -38,6 +38,8 @@ CREATE TABLE cotizaciones(
     REFERENCES clientes(id)
 );
 
+select * from Cotizaciones;
+
 CREATE TABLE detalle_cotizacion(
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_cotizacion INT,
@@ -64,6 +66,8 @@ CREATE TABLE detalle_cotizacion(
     FOREIGN KEY(id_cotizacion)
     REFERENCES cotizaciones(id)
 );
+
+SELECT * FROM detalle_cotizacion;
 
 
 INSERT INTO clientes
@@ -126,6 +130,27 @@ MODIFY costo_total DECIMAL(10,2) DEFAULT 0;
 
 ALTER TABLE cotizaciones
 MODIFY tiempo_total_minutos INT DEFAULT 0;
+
+ALTER TABLE detalle_cotizacion
+DROP COLUMN cantidad;
+
+
+ALTER TABLE detalle_cotizacion
+DROP COLUMN subtotal,
+DROP COLUMN minutos_equivalentes;
+
+INSERT INTO usuarios
+(
+    nombre,
+    correo,
+    password
+)
+VALUES
+(
+    'C.RAMIREZ',
+    'cuitlahuac0920@gmail.com',
+    '$2y$10$FN3ReC3iv3QrCQbIpq9Rk.E6IXuHgCFGZ75JGx8ivGHlSkc8OIi8i'
+);
 
 
 
