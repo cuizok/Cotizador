@@ -53,7 +53,18 @@ $router->post('/Logout', 'AuthController@logout');
 
 
 // ======================================================
-// VISTAS
+// VISTAS DEL LOGIN (INICIO DE SESIÓN)
 // ======================================================
 
+$router->get('/', 'AuthController@viewLogin');
+
 $router->get('/login', 'AuthController@viewLogin');
+
+$router->post('/login', 'AuthController@login');
+
+// ======================================================
+// VISTAS DEL HOME (SECCIÓN PRINCIPAL)
+// ======================================================
+
+
+$router->get('/Home', 'HomeController@Home');

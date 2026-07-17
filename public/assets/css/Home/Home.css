@@ -1,0 +1,234 @@
+* {
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+    font-family:
+    'Segoe UI', sans-serif;
+
+}
+
+
+
+body {
+
+    background:#f4f6f9;
+
+}
+
+
+
+.layout {
+
+    display:flex;
+
+    min-height:100vh;
+
+}
+
+
+
+/* MENU */
+
+.sidebar {
+
+    width:250px;
+
+    background:#1f2937;
+
+    color:white;
+
+    padding:25px;
+
+}
+
+
+
+.logo {
+
+    margin-bottom:40px;
+
+}
+
+
+
+.sidebar nav a {
+
+    display:block;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:14px;
+
+    border-radius:10px;
+
+    margin-bottom:10px;
+
+    transition:.3s;
+
+}
+
+
+
+.sidebar nav a:hover {
+
+    background:#374151;
+
+}
+
+
+
+
+
+/* CONTENIDO */
+
+
+.content {
+
+    flex:1;
+
+    padding:30px;
+
+}
+
+
+
+.topbar {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.user {
+
+    background:white;
+
+    padding:12px 20px;
+
+    border-radius:10px;
+
+}
+
+
+
+
+/* CARDS */
+
+
+.cards {
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(4,1fr);
+
+    gap:20px;
+
+}
+
+
+
+.card {
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:15px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+
+.card h3 {
+
+    color:#666;
+
+    font-size:15px;
+
+}
+
+
+
+.card span {
+
+    display:block;
+
+    margin-top:15px;
+
+    font-size:32px;
+
+    font-weight:bold;
+
+}
+
+
+
+
+
+.panel {
+
+    margin-top:30px;
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:15px;
+
+}
+
+.sidebar nav a {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:14px;
+
+    border-radius:10px;
+
+    margin-bottom:10px;
+
+    transition:.3s;
+
+}
+
+
+.sidebar nav a i {
+
+    width:22px;
+
+    font-size:18px;
+
+}
+
+
+
+.sidebar nav a:hover {
+
+    background:#374151;
+
+}

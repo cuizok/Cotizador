@@ -23,17 +23,12 @@ class Router
     {
         $this->routes['DELETE'][$uri] = $action;
     }
-
-
-
-
 public function dispatch()
 {
-   $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-    // Elimina el prefijo del proyecto
     $basePath = '/Blackcore/Cotizador/public';
-    // verificar si este if es compatible con la versión de PHP XAMPP APACHE
+
     if (strpos($uri, $basePath) === 0) {
         $uri = substr($uri, strlen($basePath));
     }
@@ -46,15 +41,13 @@ public function dispatch()
 
     if (isset($this->routes[$method][$uri])) {
 
-        [$controller, $function] =
-            explode('@', $this->routes[$method][$uri]);
+        [$controller, $function] = explode('@', $this->routes[$method][$uri]);
 
-        require_once __DIR__ .
-            "/../app/Controllers/$controller.php";
+        require_once __DIR__ . "/../app/Controllers/$controller.php";
 
-        $controller = new $controller();
+        $controllerInstance = new $controller();
 
-        $controller->$function();
+        $controllerInstance->$function();
 
     } else {
 
