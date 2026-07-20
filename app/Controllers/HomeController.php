@@ -1,11 +1,13 @@
 <?php
 
-require_once __DIR__.'/../../core/View.php';
-class HomeController
+class HomeController extends Controller
 {
 
-public function Home()
-{
-    View::render('Home/Home');
-}
+    public function Home()
+    {
+        $this->verificarAutenticacion();
+
+        View::render('Home/Home');
+    }
+
 }

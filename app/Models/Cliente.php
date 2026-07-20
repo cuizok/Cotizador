@@ -78,7 +78,6 @@ public function actualizar($id, array $data)
             empresa = :empresa,
             correo = :correo,
             telefono = :telefono,
-            estatus = :estatus,
             updated_at = NOW()
         WHERE id = :id
     ";
@@ -90,8 +89,7 @@ public function actualizar($id, array $data)
         ':nombre' => $data['nombre'],
         ':empresa' => $data['empresa'],
         ':correo' => $data['correo'],
-        ':telefono' => $data['telefono'],
-        ':estatus' => $data['estatus']
+        ':telefono' => $data['telefono']
     ]);
 
     return $stmt->rowCount() > 0;

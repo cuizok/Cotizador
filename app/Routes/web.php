@@ -68,3 +68,13 @@ $router->post('/login', 'AuthController@login');
 
 
 $router->get('/Home', 'HomeController@Home');
+
+
+
+
+// ======================================================
+// VISTAS DEL CLIENTE 
+// ======================================================
+
+
+$router->get('/Cliente', 'ClienteController@Cliente');

@@ -1,13 +1,16 @@
 <?php
 
-require_once __DIR__.'/../Models/Usuario.php';
-require_once __DIR__.'/../../core/View.php';
-class AuthController
+
+class AuthController extends Controller
 {
 
 public function viewLogin()
 {
-    View::render('Auth/Login');
+    View::render(
+        'Auth/Login',
+        [],
+        false
+    );
 }
 
         public function login()

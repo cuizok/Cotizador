@@ -1,9 +1,15 @@
 <?php
-require_once __DIR__ . '/../../core/Middleware.php';
-require_once __DIR__ . '/../Models/Cliente.php';
 
-class ClienteController
+class ClienteController extends Controller
 {
+
+    public function Cliente()
+    {
+        $this->verificarAutenticacion();
+
+        View::render('Clientes/Cliente');
+    }
+
 
     public function __construct()
     {
@@ -11,20 +17,28 @@ class ClienteController
     }
 
 
-    public function index()
-    {
+public function index()
+{
+    try {
+
         $cliente = new Cliente();
 
         $clientes = $cliente->obtenerTodos();
 
         header('Content-Type: application/json');
 
-        echo json_encode(
-            $clientes,
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
-        );
-    }
+        echo json_encode($clientes);
 
+    } catch (Exception $e) {
+
+        http_response_code(500);
+
+        echo json_encode([
+            "mensaje" => $e->getMessage()
+        ]);
+
+    }
+}
     public function show()
     {
         $id = $_GET['id'] ?? null;

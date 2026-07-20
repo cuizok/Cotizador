@@ -1,0 +1,188 @@
+/* ===========================
+   TOAST
+=========================== */
+
+#toast-container{
+
+    position: fixed;
+
+    bottom: 20px;
+
+    right: 20px;
+
+    z-index: 9999;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+}
+
+
+/* ===========================
+   TOAST BASE
+=========================== */
+
+.toast{
+
+    min-width: 320px;
+
+    max-width: 400px;
+
+    padding: 16px 20px;
+
+    border-radius: 12px;
+
+    color: #fff;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    box-shadow: 0 12px 30px rgba(0,0,0,.15);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    animation: slideIn .35s ease;
+
+}
+
+
+/* ===========================
+   ICONOS
+=========================== */
+
+.toast::before{
+
+    font-family: "Font Awesome 6 Free";
+
+    font-weight: 900;
+
+    font-size: 18px;
+
+}
+
+
+/* ===========================
+   SUCCESS
+=========================== */
+
+.toast.success{
+
+    background: #22c55e;
+
+}
+
+.toast.success::before{
+
+    content: "\f058";
+
+}
+
+
+/* ===========================
+   ERROR
+=========================== */
+
+.toast.error{
+
+    background: #ef4444;
+
+}
+
+.toast.error::before{
+
+    content: "\f057";
+
+}
+
+
+/* ===========================
+   WARNING
+=========================== */
+
+.toast.warning{
+
+    background: #f59e0b;
+
+}
+
+.toast.warning::before{
+
+    content: "\f071";
+
+}
+
+
+/* ===========================
+   INFO
+=========================== */
+
+.toast.info{
+
+    background: #3b82f6;
+
+}
+
+.toast.info::before{
+
+    content: "\f05a";
+
+}
+
+
+/* ===========================
+   ANIMACIONES
+=========================== */
+
+.toast.hide{
+
+    animation: slideOut .35s forwards;
+
+}
+
+
+@keyframes slideIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(40px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+@keyframes slideOut{
+
+    from{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+    to{
+
+        opacity:0;
+
+        transform:translateY(40px);
+
+    }
+
+}

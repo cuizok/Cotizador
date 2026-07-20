@@ -1,8 +1,6 @@
 <?php
-require_once __DIR__ . '/../../core/Middleware.php';
-require_once __DIR__.'/../Models/Cotizacion.php';
 
-class CotizacionController
+class CotizacionController extends Controller
 {
 
     public function __construct()

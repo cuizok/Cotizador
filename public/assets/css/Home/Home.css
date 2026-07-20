@@ -97,8 +97,7 @@ body {
 }
 
 
-
-.topbar {
+.topbar{
 
     display:flex;
 
@@ -110,19 +109,65 @@ body {
 
 }
 
+.user{
 
+    display:flex;
 
-.user {
+    align-items:center;
 
-    background:white;
+    gap:12px;
 
-    padding:12px 20px;
+    background:#fff;
 
-    border-radius:10px;
+    padding:10px 18px;
+
+    border-radius:12px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
 
 }
 
+.user i:first-child{
 
+    color:#374151;
+
+    font-size:18px;
+
+}
+
+.user span{
+
+    font-weight:500;
+
+    color:#374151;
+
+}
+
+#btnLogout{
+
+    border:none;
+
+    background:transparent;
+
+    cursor:pointer;
+
+    color:#dc2626;
+
+    font-size:18px;
+
+    padding:6px;
+
+    transition:.2s;
+
+}
+
+#btnLogout:hover{
+
+    color:#b91c1c;
+
+    transform:scale(1.1);
+
+}
 
 
 /* CARDS */
@@ -178,7 +223,37 @@ body {
 
 }
 
+.user{
 
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    background:white;
+
+    padding:12px 20px;
+
+    border-radius:10px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+}
+
+.user button{
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    color:#e74c3c;
+
+    font-size:18px;
+
+}
 
 
 

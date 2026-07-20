@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 
 require_once '../config/config.php';
 
-require_once '../core/Router.php';
+require_once '../core/Autoload.php';
 
 $router = new Router();
 
