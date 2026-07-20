@@ -5,10 +5,20 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-
 document
 .getElementById("btnNuevo")
-.addEventListener("click", abrirModal);
+.addEventListener("click", () => {
+
+    document.getElementById("formCliente").reset();
+
+    document.getElementById("idCliente").value = "";
+
+    document.getElementById("tituloModal").innerText =
+    "Nuevo Cliente";
+
+    abrirModal();
+
+});
 
 
 
@@ -128,16 +138,11 @@ function abrirModal(){
 }
 
 
-
 function cerrarModal(){
 
-    document
-    .getElementById("formCliente")
-    .reset();
+    document.getElementById("formCliente").reset();
 
-    document
-    .getElementById("idCliente")
-    .value="";
+    document.getElementById("idCliente").value = "";
 
     document
     .getElementById("modalCliente")
