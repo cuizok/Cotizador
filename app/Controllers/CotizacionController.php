@@ -3,6 +3,23 @@
 class CotizacionController extends Controller
 {
 
+
+    public function CotizacionView()
+    {
+        $this->verificarAutenticacion();
+
+        View::render('Cotizaciones/Cotizacion');
+    }
+
+    
+    public function NuevaCotizacionView()
+    {
+        $this->verificarAutenticacion();
+
+        View::render('Cotizaciones/NuevaCotizacion');
+    }
+
+
     public function __construct()
     {
         Middleware::auth();

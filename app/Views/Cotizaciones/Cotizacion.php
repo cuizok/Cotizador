@@ -1,34 +1,35 @@
 <link 
 rel="stylesheet" 
-href="<?= BASE_URL ?>/assets/css/Clientes/Clientes.css">
+href="<?= BASE_URL ?>/assets/css/Cotizaciones/Cotizacion.css">
 
 <section class="panel">
 
     <div class="toolbar">
 
-        <h2>Clientes</h2>
+        <h2>Cotizaciones</h2>
 
         <div class="acciones">
 
             <input
                 type="text"
-                id="buscarCliente"
-                placeholder="Buscar cliente..."
+                id="buscarCotizacion"
+                placeholder="Buscar cotización..."
             >
-
-            <button id="btnNuevo">
+            <a
+                href="<?= BASE_URL ?>/NuevaCotizacion"
+                id="btnNuevo">
 
                 <i class="fa-solid fa-plus"></i>
 
-                Nuevo Cliente
+                Nueva Cotización
 
-            </button>
+            </a>
 
         </div>
 
     </div>
 
-    <table class="tabla-clientes">
+    <table class="tabla-cotizaciones">
 
         <thead>
 
@@ -36,11 +37,9 @@ href="<?= BASE_URL ?>/assets/css/Clientes/Clientes.css">
 
                 <th>ID</th>
 
-                <th>Nombre</th>
+                <th>Titulo</th>
 
-                <th>Correo</th>
-
-                <th>Teléfono</th>
+                <th>Cliente</th>
 
                 <th>Estatus</th>
 
@@ -50,7 +49,7 @@ href="<?= BASE_URL ?>/assets/css/Clientes/Clientes.css">
 
         </thead>
 
-        <tbody id="tbodyClientes">
+        <tbody id="tbodyCotizacion">
 
         </tbody>
 
@@ -61,7 +60,7 @@ href="<?= BASE_URL ?>/assets/css/Clientes/Clientes.css">
 
 <!-- MODAL -->
 
-<div class="modal" id="modalCliente">
+<div class="modal" id="modalCotizacion">
 
     <div class="modal-content">
 
@@ -69,7 +68,7 @@ href="<?= BASE_URL ?>/assets/css/Clientes/Clientes.css">
 
             <h2 id="tituloModal">
 
-                Nuevo Cliente
+                Nueva cotización
 
             </h2>
 
@@ -81,57 +80,37 @@ href="<?= BASE_URL ?>/assets/css/Clientes/Clientes.css">
 
         </div>
 
-        <form id="formCliente">
+        <form id="formCotizacion">
 
             <input
                 type="hidden"
-                id="idCliente"
+                id="idCotizacion"
             >
 
             <div class="input-group">
 
-                <label>Nombre</label>
+                <label>Titulo</label>
 
                 <input
                     type="text"
-                    id="nombre"
+                    id="titulo"
                 >
 
             </div>
 
             <div class="input-group">
 
-                <label>Correo</label>
-
-                <input
-                    type="email"
-                    id="correo"
-                >
-
-            </div>
-
-              <div class="input-group">
-
-                <label>Empresa</label>
+                <label>Descripcion</label>
 
                 <input
                     type="text"
-                    id="empresa"
+                    id="descripcion"
                 >
 
             </div>
 
-            <div class="input-group">
 
-                <label>Teléfono</label>
-
-                <input
-                    type="text"
-                    id="telefono"
-                >
-
-            </div>
-
+        
             <div class="modal-footer">
 
                 <button
@@ -212,4 +191,4 @@ href="<?= BASE_URL ?>/assets/css/Clientes/Clientes.css">
 
 </div>
 
-<script src="<?= BASE_URL ?>/assets/js/Clientes/Clientes.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/Cotizaciones/Cotizacion.js"></script>

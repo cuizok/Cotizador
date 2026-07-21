@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    cargarClientes();
+   cargarCotizaciones();
 
 });
 
@@ -9,12 +9,12 @@ document
 .getElementById("btnNuevo")
 .addEventListener("click", () => {
 
-    document.getElementById("formCliente").reset();
+    document.getElementById("formCotizacion").reset();
 
-    document.getElementById("idCliente").value = "";
+    document.getElementById("idCotizacion").value = "";
 
     document.getElementById("tituloModal").innerText =
-    "Nuevo Cliente";
+    "Nueva cotización";
 
     abrirModal();
 
@@ -49,7 +49,7 @@ document
 
 
 document
-.getElementById("formCliente")
+.getElementById("formCotizacion")
 .addEventListener(
 "submit",
 function(e){
@@ -58,7 +58,7 @@ function(e){
 
 
     const id =
-    document.getElementById("idCliente").value;
+    document.getElementById("idCotizacion").value;
 
 
     if(id === ""){
@@ -75,45 +75,44 @@ function(e){
 
 
 
-async function cargarClientes(){
+async function cargarCotizaciones(){
 
     try{
 
         const response = await fetch(
-            "/Blackcore/Cotizador/public/ClienteAll"
+            "/Blackcore/Cotizador/public/CotizacionAll"
         );
 
-        const clientes = await response.json();
+        const cotizaciones = await response.json();
 
         const tbody =
-        document.getElementById("tbodyClientes");
+        document.getElementById("tbodyCotizacion");
 
         tbody.innerHTML = "";
 
-        clientes.forEach(cliente=>{
+        cotizaciones.forEach(cotizaciones=>{
 
             tbody.innerHTML += `
 
                 <tr>
 
-                    <td>${cliente.id}</td>
+                    <td>${cotizaciones.id}</td>
 
-                    <td>${cliente.nombre}</td>
+                    <td>${cotizaciones.titulo}</td>
 
-                    <td>${cliente.correo}</td>
+                    <td>${cotizaciones.cliente}</td>
 
-                    <td>${cliente.telefono}</td>
 
                     <td>
 
                         <span class="
                             badge
-                            ${cliente.estatus === 'ACTIVO'
+                            ${cotizaciones.estatus === 'ACEPTADA'
                                 ? 'badge-success'
                                 : 'badge-danger'}
                         ">
 
-                            ${cliente.estatus}
+                            ${cotizaciones.estatus}
 
                         </span>
 
@@ -122,14 +121,14 @@ async function cargarClientes(){
                     <td>
 
                         <button
-                            onclick="cargarClienteById(${cliente.id})">
+                            onclick="cargarCotizacionbyId(${cotizaciones.id})">
 
                             <i class="fa-solid fa-pen"></i>
 
                         </button>
 
                         <button
-                            onclick="eliminarCliente(${cliente.id})">
+                            onclick="eliminarCotizacion(${cotizaciones.id})">
 
                             <i class="fa-solid fa-trash"></i>
 
@@ -148,7 +147,7 @@ async function cargarClientes(){
         console.error(error);
 
         mostrarToast(
-            "Error al cargar clientes",
+            "Error al cargar cotizaciones",
             "error"
         );
 
@@ -161,7 +160,7 @@ async function cargarClientes(){
 function abrirModal(){
 
     document
-    .getElementById("modalCliente")
+    .getElementById("modalCotizacion")
     .classList.add("show");
 
 }
@@ -169,12 +168,12 @@ function abrirModal(){
 
 function cerrarModal(){
 
-    document.getElementById("formCliente").reset();
+    document.getElementById("formCotizacion").reset();
 
-    document.getElementById("idCliente").value = "";
+    document.getElementById("idCotizacion").value = "";
 
     document
-    .getElementById("modalCliente")
+    .getElementById("modalCotizacion")
     .classList.remove("show");
 
 }
@@ -226,55 +225,47 @@ async function crearCliente(){
 
     cerrarModal();
 
-    cargarClientes();
+   cargarCotizaciones();
 
 }
 
-async function cargarClienteById(id){
+async function cargarCotizacionbyId(id){
 
 
     try{
 
 
         const response = await fetch(
-            `/Blackcore/Cotizador/public/clienteById?id=${id}`
+            `/Blackcore/Cotizador/public/CotizacionById?id=${id}`
         );
 
 
-        const cliente = await response.json();
+        const cotizacion = await response.json();
 
 
 
-        document.getElementById("idCliente").value =
-        cliente.id;
+        document.getElementById("idCotizacion").value =
+        cotizacion.id;
 
         console.log(
             "ID CARGADO EN MODAL:",
-            document.getElementById("idCliente").value
+            document.getElementById("idCotizacion").value
         );
 
-        document.getElementById("nombre").value =
-        cliente.nombre;
+        document.getElementById("titulo").value =
+        cotizacion.titulo;
 
 
 
-        document.getElementById("correo").value =
-        cliente.correo;
+        document.getElementById("descripcion").value =
+        cotizacion.descripcion;
 
 
-
-        document.getElementById("empresa").value =
-        cliente.empresa;
-
-
-
-        document.getElementById("telefono").value =
-        cliente.telefono;
 
 
 
         document.getElementById("tituloModal").innerText =
-        "Editar Cliente";
+        "Editar Cotización";
 
 
 
@@ -366,7 +357,7 @@ async function actualizarCliente(){
 
 
 
-        cargarClientes();
+       cargarCotizaciones();
 
 
 
@@ -416,7 +407,7 @@ async function confirmarEliminarCliente(){
 
         cerrarModalEliminar();
 
-        cargarClientes();
+       cargarCotizaciones();
 
 
     }catch(error){
@@ -445,7 +436,7 @@ function cerrarModalEliminar(){
 
 let idClienteEliminar = null;
 
-function eliminarCliente(id){
+function eliminarCotizacion(id){
 
     idClienteEliminar = id;
 

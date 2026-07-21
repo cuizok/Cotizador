@@ -78,3 +78,17 @@ $router->get('/Home', 'HomeController@Home');
 
 
 $router->get('/Cliente', 'ClienteController@Cliente');
+
+
+
+
+// ======================================================
+// VISTAS DE COTIZACION
+// ======================================================
+
+
+$router->get('/Cotizaciones', 'CotizacionController@CotizacionView');
+
+$router->get('/NuevaCotizacion', 'CotizacionController@NuevaCotizacionView');
+
+

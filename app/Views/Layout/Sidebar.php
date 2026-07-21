@@ -24,7 +24,7 @@
 
         </a>
 
-        <a href="<?= BASE_URL ?>/Cotizacion">
+        <a href="<?= BASE_URL ?>/Cotizaciones">
 
             <i class="fa-solid fa-file-lines"></i>
 
