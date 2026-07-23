@@ -382,7 +382,7 @@ function cancelarCotizacion() {
             return;
         }
     }
-    window.location.href = '/Blackcore/Cotizador/public/cotizaciones';
+    window.location.href = '/Blackcore/Cotizador/public/Cotizaciones';
 }
 
 // ============================================
@@ -428,21 +428,29 @@ async function guardarCotizacion() {
     });
 
     // Preparar datos para enviar
-    const data = {
-        cliente_id: parseInt(clienteId),
-        titulo: titulo,
-        descripcion: descripcion,
-        costo_total: costoTotal,
-        tiempo_total: totalMinutos,
-        tiempo_texto: formatearTiempo(totalMinutos),
-        detalles: detalleServicios.map(s => ({
-            servicio: s.servicio.trim(),
-            descripcion: s.descripcion.trim() || null,
-            costo: parseFloat(s.costo) || 0,
-            tiempo: parseFloat(s.tiempo) || 0,
-            unidad_tiempo: s.unidad_tiempo
-        }))
-    };
+const data = {
+
+    id_cliente: parseInt(clienteId),
+
+    titulo: titulo,
+
+    descripcion: descripcion,
+
+    detalles: detalleServicios.map(servicio => ({
+
+        servicio: servicio.servicio,
+
+        descripcion: servicio.descripcion,
+
+        costo: parseFloat(servicio.costo),
+
+        tiempo: parseFloat(servicio.tiempo),
+
+        unidad_tiempo: servicio.unidad_tiempo
+
+    }))
+
+};
 
     try {
         // Mostrar loading
@@ -451,7 +459,7 @@ async function guardarCotizacion() {
         btnGuardar.innerHTML = '<span class="spinner"></span> Guardando...';
         btnGuardar.disabled = true;
 
-        const response = await fetch('/Blackcore/Cotizador/public/cotizacion/guardar', {
+        const response = await fetch('/Blackcore/Cotizador/public/Insert-Cotizacion', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -464,7 +472,7 @@ async function guardarCotizacion() {
         if (response.ok) {
             mostrarToast(result.mensaje || 'Cotización guardada exitosamente', 'success');
             setTimeout(() => {
-                window.location.href = '/Blackcore/Cotizador/public/cotizaciones';
+                window.location.href = '/Blackcore/Cotizador/public/Cotizaciones';
             }, 1500);
         } else {
             mostrarToast(result.mensaje || 'Error al guardar la cotización', 'error');

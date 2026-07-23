@@ -1,3 +1,14 @@
+let detalleServicios = [];
+
+const UNIDADES_TIEMPO = {
+    MINUTOS: { label:"Minutos", minutos:1 },
+    HORAS:{ label:"Horas", minutos:60 },
+    DIAS:{ label:"Días", minutos:1440 },
+    SEMANAS:{ label:"Semanas", minutos:10080 },
+    MESES:{ label:"Meses", minutos:43200 },
+    ANIOS:{ label:"Años", minutos:525600 }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
 
    cargarCotizaciones();
@@ -9,28 +20,12 @@ document
 .getElementById("btnNuevo")
 .addEventListener("click", () => {
 
-    document.getElementById("formCotizacion").reset();
-
-    document.getElementById("idCotizacion").value = "";
-
-    document.getElementById("tituloModal").innerText =
-    "Nueva cotización";
-
-    abrirModal();
+    window.location.href =
+    "/Blackcore/Cotizador/public/NuevaCotizacion";
 
 });
 
 
-
-document
-.getElementById("btnCancelar")
-.addEventListener("click", cerrarModal);
-
-
-
-document
-.getElementById("btnCerrar")
-.addEventListener("click", cerrarModal);
 
 document
 .getElementById("btnCancelarEliminar")
@@ -48,30 +43,6 @@ document
 
 
 
-document
-.getElementById("formCotizacion")
-.addEventListener(
-"submit",
-function(e){
-
-    e.preventDefault();
-
-
-    const id =
-    document.getElementById("idCotizacion").value;
-
-
-    if(id === ""){
-
-        crearCliente();
-
-    }else{
-
-        actualizarCliente();
-
-    }
-
-});
 
 
 
@@ -123,7 +94,14 @@ async function cargarCotizaciones(){
                         <button
                             onclick="cargarCotizacionbyId(${cotizaciones.id})">
 
-                            <i class="fa-solid fa-pen"></i>
+                             <i class="fa-solid fa-eye"></i>
+
+                        </button>
+
+                        <button
+                            onclick="editarCotizacion(${cotizaciones.id})">
+
+                            <i class="fa-solid fa-pen icon-editar"></i>
 
                         </button>
 
@@ -155,79 +133,39 @@ async function cargarCotizaciones(){
 
 }
 
-
-
-function abrirModal(){
+function abrirPanelDetalle(){
 
     document
-    .getElementById("modalCotizacion")
+    .getElementById("panelDetalle")
+    .classList.add("show");
+
+    document
+    .getElementById("overlayDetalle")
     .classList.add("show");
 
 }
 
-
-function cerrarModal(){
-
-    document.getElementById("formCotizacion").reset();
-
-    document.getElementById("idCotizacion").value = "";
+function cerrarPanelDetalle(){
 
     document
-    .getElementById("modalCotizacion")
+    .getElementById("panelDetalle")
+    .classList.remove("show");
+
+    document
+    .getElementById("overlayDetalle")
     .classList.remove("show");
 
 }
 
-async function crearCliente(){
+document
+.getElementById("cerrarPanelDetalle")
+.addEventListener("click",cerrarPanelDetalle);
 
-    const cliente = {
-
-        nombre:
-        document.getElementById("nombre").value,
-
-        correo:
-        document.getElementById("correo").value,
-
-        empresa:
-        document.getElementById("empresa").value,
-
-        telefono:
-        document.getElementById("telefono").value
-
-    };
+document
+.getElementById("overlayDetalle")
+.addEventListener("click",cerrarPanelDetalle);
 
 
-    const response = await fetch(
-        "/Blackcore/Cotizador/public/Insert-cliente",
-        {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":"application/json"
-            },
-
-            body:
-            JSON.stringify(cliente)
-
-        }
-    );
-
-
-    const data = await response.json();
-
-
-    mostrarToast(
-        data.mensaje,
-        "success"
-    );
-
-
-    cerrarModal();
-
-   cargarCotizaciones();
-
-}
 
 async function cargarCotizacionbyId(id){
 
@@ -242,34 +180,193 @@ async function cargarCotizacionbyId(id){
 
         const cotizacion = await response.json();
 
-
-
-        document.getElementById("idCotizacion").value =
-        cotizacion.id;
-
-        console.log(
-            "ID CARGADO EN MODAL:",
-            document.getElementById("idCotizacion").value
-        );
-
-        document.getElementById("titulo").value =
-        cotizacion.titulo;
+        detalleServicios = cotizacion.detalles;
 
 
 
-        document.getElementById("descripcion").value =
-        cotizacion.descripcion;
+const contenido = document.getElementById("contenidoDetalle");
 
+contenido.innerHTML = `
 
+<div class="detalle-seccion">
 
+    <div class="detalle-titulo">
 
+        Información General
 
-        document.getElementById("tituloModal").innerText =
-        "Editar Cotización";
+    </div>
 
+    <h2>${cotizacion.titulo}</h2>
 
+    <p>
 
-        abrirModal();
+        ${cotizacion.descripcion}
+
+    </p>
+
+</div>
+
+<div class="detalle-seccion">
+
+    <div class="detalle-titulo">
+
+        Cliente
+
+    </div>
+
+    <div class="card-cliente">
+
+        <h3>
+
+            ${cotizacion.cliente}
+
+        </h3>
+
+        <p>
+
+            <i class="fa-solid fa-building"></i>
+
+            ${cotizacion.empresa}
+
+        </p>
+
+        <p>
+
+            <i class="fa-solid fa-envelope"></i>
+
+            ${cotizacion.correo}
+
+        </p>
+
+        <p>
+
+            <i class="fa-solid fa-phone"></i>
+
+            ${cotizacion.telefono}
+
+        </p>
+
+    </div>
+
+</div>
+
+<div class="detalle-seccion">
+
+    <div class="detalle-titulo">
+
+        Resumen
+
+    </div>
+
+    <div class="resumen-grid">
+
+        <div class="resumen-item">
+
+            <i class="fa-solid fa-dollar-sign"></i>
+
+            <h4>
+
+                $${parseFloat(cotizacion.costo_total).toLocaleString()}
+
+            </h4>
+
+            <span>
+
+                Costo Total
+
+            </span>
+
+        </div>
+
+        <div class="resumen-item">
+
+            <i class="fa-solid fa-clock"></i>
+
+            <h4>
+
+                ${cotizacion.tiempo_total_minutos}
+
+            </h4>
+
+            <span>
+
+                Minutos
+
+            </span>
+
+        </div>
+
+        <div class="resumen-item">
+
+            <i class="fa-solid fa-layer-group"></i>
+
+            <h4>
+
+                ${cotizacion.detalles.length}
+
+            </h4>
+
+            <span>
+
+                Servicios
+
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="detalle-seccion">
+
+    <div class="detalle-titulo">
+
+        Servicios
+
+    </div>
+
+    ${cotizacion.detalles.map(servicio=>`
+
+        <div class="servicio-card">
+
+            <h3>
+
+                ${servicio.servicio}
+
+            </h3>
+
+            <p>
+
+                ${servicio.descripcion ?? ""}
+
+            </p>
+
+            <div class="servicio-footer">
+
+                <span>
+
+                    💰 $${parseFloat(servicio.costo).toLocaleString()}
+
+                </span>
+
+                <span>
+
+                    ⏱ ${servicio.tiempo} ${servicio.unidad_tiempo}
+
+                </span>
+
+            </div>
+
+        </div>
+
+    `).join("")}
+
+</div>
+
+`;
+
+abrirPanelDetalle();
 
 
 
@@ -290,93 +387,6 @@ async function cargarCotizacionbyId(id){
 
 }
 
-async function actualizarCliente(){
-
-
-    const id =
-    document.getElementById("idCliente").value;
-
-
-
-    const cliente = {
-
-
-        id:id,
-
-
-        nombre:
-        document.getElementById("nombre").value,
-
-
-        correo:
-        document.getElementById("correo").value,
-
-
-        empresa:
-        document.getElementById("empresa").value,
-
-
-        telefono:
-        document.getElementById("telefono").value
-
-
-    };
-
-
-
-    try{
-
-        console.log(cliente);
-        const response = await fetch(
-            `/Blackcore/Cotizador/public/Update-cliente?id=${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(cliente)
-            }
-        );
-
-
-
-        const data =
-        await response.json();
-        console.log(data);
-
-
-
-        mostrarToast(
-            data.mensaje,
-            "success"
-        );
-
-
-
-        cerrarModal();
-
-
-
-       cargarCotizaciones();
-
-
-
-    }catch(error){
-
-
-        console.error(error);
-
-
-        mostrarToast(
-            "Error al actualizar cliente",
-            "error"
-        );
-
-
-    }
-
-
-}
 
 async function confirmarEliminarCliente(){
 
@@ -433,6 +443,12 @@ function cerrarModalEliminar(){
 
 }
 
+function editarCotizacion(id){
+
+    window.location.href =
+    `/Blackcore/Cotizador/public/Edit/EditarCotizacion?id=${id}`;
+
+}
 
 let idClienteEliminar = null;
 

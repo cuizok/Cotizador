@@ -89,6 +89,9 @@ $router->get('/Cliente', 'ClienteController@Cliente');
 
 $router->get('/Cotizaciones', 'CotizacionController@CotizacionView');
 
-$router->get('/NuevaCotizacion', 'CotizacionController@NuevaCotizacionView');
+$router->get('/Add/NuevaCotizacion', 'CotizacionController@NuevaCotizacionView');
+
+
+$router->get('/Edit/EditarCotizacion', 'CotizacionController@EditCotizacionView');
 
 

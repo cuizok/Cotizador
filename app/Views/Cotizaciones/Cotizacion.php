@@ -16,7 +16,7 @@ href="<?= BASE_URL ?>/assets/css/Cotizaciones/Cotizacion.css">
                 placeholder="Buscar cotización..."
             >
             <a
-                href="<?= BASE_URL ?>/NuevaCotizacion"
+                href="<?= BASE_URL ?>/Add/NuevaCotizacion"
                 id="btnNuevo">
 
                 <i class="fa-solid fa-plus"></i>
@@ -190,5 +190,29 @@ href="<?= BASE_URL ?>/assets/css/Cotizaciones/Cotizacion.css">
     </div>
 
 </div>
+
+<!-- PANEL DETALLE COTIZACIÓN -->
+
+<div id="panelDetalle" class="panel-detalle">
+
+    <div class="panel-detalle-header">
+
+        <h2>Detalle de Cotización</h2>
+
+        <button id="cerrarPanelDetalle">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+    </div>
+
+    <div id="contenidoDetalle">
+
+        <!-- aquí se carga todo -->
+
+    </div>
+
+</div>
+
+<div id="overlayDetalle" class="overlay-detalle"></div>
 
 <script src="<?= BASE_URL ?>/assets/js/Cotizaciones/Cotizacion.js"></script>

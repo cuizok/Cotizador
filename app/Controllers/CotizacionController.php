@@ -16,9 +16,20 @@ class CotizacionController extends Controller
     {
         $this->verificarAutenticacion();
 
-        View::render('Cotizaciones/NuevaCotizacion');
+        View::render('Cotizaciones/Add/NuevaCotizacion');
     }
 
+public function EditCotizacionView()
+{
+    $idCotizacion = $_GET['id'] ?? 0;
+
+    View::render(
+        'Cotizaciones/Edit/EditarCotizacion',
+        [
+            'idCotizacion' => $idCotizacion
+        ]
+    );
+}
 
     public function __construct()
     {
@@ -59,59 +70,106 @@ class CotizacionController extends Controller
 
     $cotizacion = new Cotizacion();
 
-    $registro = $cotizacion->obtenerPorId($id);
+$registro = $cotizacion->obtenerPorId($id);
 
-    header('Content-Type: application/json');
+if (!$registro) {
 
-    if (!$registro) {
+    http_response_code(404);
 
-        http_response_code(404);
+    echo json_encode([
+        'mensaje' => 'Cotización no encontrada'
+    ]);
 
-        echo json_encode([
-            'mensaje' => 'Cotización no encontrada'
-        ]);
+    return;
+}
 
-        return;
-    }
+// Agregar los servicios de la cotización
+$registro['detalles'] = $cotizacion->obtenerDetalles($id);
 
-    echo json_encode(
-        $registro,
-        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
-    );
+header('Content-Type: application/json');
+
+echo json_encode(
+    $registro,
+    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+);
 }
 
 public function store()
 {
+
     $data = json_decode(
-        file_get_contents('php://input'),
+        file_get_contents("php://input"),
         true
     );
 
     if (
-        empty($data['id_cliente']) ||
-        empty($data['titulo']) ||
-        empty($data['descripcion'])
-    ) {
+
+        empty($data["id_cliente"]) ||
+
+        empty($data["titulo"]) ||
+
+        empty($data["descripcion"])
+
+    ){
 
         http_response_code(400);
 
         echo json_encode([
-            'mensaje' => 'El cliente, título y descripción son obligatorios.'
+            "mensaje"=>"Todos los datos son obligatorios."
         ]);
 
         return;
+
     }
 
     $cotizacion = new Cotizacion();
 
-    $id = $cotizacion->crear($data);
+    $idCotizacion = $cotizacion->crear($data);
 
-    http_response_code(201);
+    if(!$idCotizacion){
+
+        http_response_code(500);
+
+        echo json_encode([
+            "mensaje"=>"No fue posible crear la cotización."
+        ]);
+
+        return;
+
+    }
+
+    if(isset($data["detalles"])){
+
+        foreach($data["detalles"] as $detalle){
+
+            $cotizacion->insertarDetalle(
+
+                $idCotizacion,
+
+                $detalle
+
+            );
+
+        }
+
+    }
+
+    $cotizacion->recalcularCostoTotal(
+        $idCotizacion
+    );
+
+    $cotizacion->recalcularTiempoTotal(
+        $idCotizacion
+    );
 
     echo json_encode([
-        'mensaje' => 'Cotización creada correctamente.',
-        'id' => $id
+
+        "mensaje"=>"Cotización creada correctamente.",
+
+        "id"=>$idCotizacion
+
     ]);
+
 }
 
 

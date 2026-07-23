@@ -26,19 +26,112 @@ class Cotizacion extends Model
     public function obtenerPorId($id)
     {
         $sql = "
-            SELECT *
-            FROM cotizaciones
-            WHERE id = :id
+            SELECT
+                c.*,
+                cl.nombre AS cliente,
+                cl.empresa,
+                cl.correo,
+                cl.telefono
+            FROM cotizaciones c
+            INNER JOIN clientes cl
+                ON c.id_cliente = cl.id
+            WHERE c.id = :id
         ";
 
         $stmt = $this->db->prepare($sql);
 
         $stmt->execute([
-            ':id' => $id
+            ':id'=>$id
         ]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+
+    public function obtenerDetalles($idCotizacion)
+{
+    $sql = "
+        SELECT
+            servicio,
+            descripcion,
+            costo,
+            tiempo,
+            unidad_tiempo
+        FROM detalle_cotizacion
+        WHERE id_cotizacion = :id
+        ORDER BY id
+    ";
+
+    $stmt = $this->db->prepare($sql);
+
+    $stmt->execute([
+        ":id"=>$idCotizacion
+    ]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+    public function insertarDetalle(
+    $idCotizacion,
+    array $detalle
+    ){
+
+    $sql="
+
+        INSERT INTO detalle_cotizacion(
+
+            id_cotizacion,
+
+            servicio,
+
+            descripcion,
+
+            costo,
+
+            tiempo,
+
+            unidad_tiempo
+
+        )
+
+        VALUES(
+
+            :id_cotizacion,
+
+            :servicio,
+
+            :descripcion,
+
+            :costo,
+
+            :tiempo,
+
+            :unidad
+
+        )
+
+    ";
+
+    $stmt=$this->db->prepare($sql);
+
+    $stmt->execute([
+
+        ":id_cotizacion"=>$idCotizacion,
+
+        ":servicio"=>$detalle["servicio"],
+
+        ":descripcion"=>$detalle["descripcion"],
+
+        ":costo"=>$detalle["costo"],
+
+        ":tiempo"=>$detalle["tiempo"],
+
+        ":unidad"=>$detalle["unidad_tiempo"]
+
+    ]);
+
+}
 
     public function crear(array $data)
     {
@@ -132,4 +225,71 @@ class Cotizacion extends Model
             ':id' => $idCotizacion
         ]);
     }
+
+    public function recalcularTiempoTotal($idCotizacion)
+{
+
+    $sql="
+
+        SELECT
+
+        SUM(
+
+            CASE unidad_tiempo
+
+                WHEN 'MINUTOS' THEN tiempo
+
+                WHEN 'HORAS' THEN tiempo*60
+
+                WHEN 'DIAS' THEN tiempo*1440
+
+                WHEN 'SEMANAS' THEN tiempo*10080
+
+                WHEN 'MESES' THEN tiempo*43200
+
+                WHEN 'ANIOS' THEN tiempo*525600
+
+            END
+
+        ) total
+
+        FROM detalle_cotizacion
+
+        WHERE id_cotizacion=:id
+
+    ";
+
+    $stmt=$this->db->prepare($sql);
+
+    $stmt->execute([
+
+        ":id"=>$idCotizacion
+
+    ]);
+
+    $total=$stmt->fetch(PDO::FETCH_ASSOC);
+
+    $sql="
+
+        UPDATE cotizaciones
+
+        SET
+
+        tiempo_total_minutos=:total
+
+        WHERE id=:id
+
+    ";
+
+    $stmt=$this->db->prepare($sql);
+
+    $stmt->execute([
+
+        ":total"=>$total["total"] ?? 0,
+
+        ":id"=>$idCotizacion
+
+    ]);
+
+}
 }

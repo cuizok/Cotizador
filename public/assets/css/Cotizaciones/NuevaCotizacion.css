@@ -103,26 +103,36 @@ body {
     border-color: #d7d8e4;
 }
 
-.btn-solid {
-    background: #4f46e5;
-    border: 1px solid #4f46e5;
-    padding: 0.4rem 0.85rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.72rem;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    transition: all 0.15s ease;
-    box-shadow: 0 1px 2px rgba(79, 70, 229, 0.25);
+.btn-solid{
+
+    background:#1d2671;
+
+    color:white;
+
+    border:none;
+
+padding:8px 14px;
+    border-radius:10px;
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    transition:.3s;
+
 }
 
-.btn-solid:hover {
-    background: #4338ca;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.28);
+
+.btn-solid:hover{
+
+    background:#151c55;
+
+    transform:translateY(-2px);
+
 }
 
 .btn-solid:disabled {
@@ -725,5 +735,200 @@ textarea.field-control {
     .stat-value.pulse,
     .toast {
         animation: none !important;
+    }
+}
+
+/* ============================================
+   CARDS DE SERVICIOS (Mismo estilo que Nueva Cotización)
+   ============================================ */
+
+.servicios-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.servicio-vacio {
+    text-align: center;
+    padding: 1.5rem 0.5rem;
+    color: #6b7280;
+    font-size: 0.85rem;
+    background: #fafbfc;
+    border-radius: 6px;
+    border: 1px dashed #e5e7eb;
+}
+
+.servicio-vacio i {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #d1d5db;
+}
+
+.servicio-card {
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr 0.8fr 0.6fr 0.9fr 0.3fr;
+    gap: 0.4rem;
+    align-items: end;
+    background: #fafbfc;
+    padding: 0.5rem 0.7rem;
+    border-radius: 6px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s;
+    animation: slideIn 0.25s ease;
+}
+
+.servicio-card:hover {
+    background: #f5f7fb;
+    border-color: #e5e7eb;
+}
+
+.servicio-card.removing {
+    animation: slideOut 0.25s ease forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideOut {
+    to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+}
+
+.servicio-field {
+    min-width: 0;
+}
+
+.mini-label {
+    display: block;
+    font-size: 0.55rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.1rem;
+}
+
+.servicio-field .input-servicio {
+    width: 100%;
+    padding: 0.2rem 0.4rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background: #fff;
+    color: #1a1a2e;
+    height: 28px;
+    transition: all 0.15s;
+}
+
+.servicio-field .input-servicio:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.06);
+}
+
+.servicio-field .input-servicio[type="number"] {
+    text-align: right;
+}
+
+.servicio-field select.input-servicio {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.4rem center;
+    padding-right: 1.2rem;
+    cursor: pointer;
+}
+
+.servicio-card .btn-eliminar-fila {
+    background: none;
+    border: none;
+    color: #d1d5db;
+    cursor: pointer;
+    padding: 0.2rem 0.3rem;
+    border-radius: 4px;
+    transition: all 0.15s;
+    font-size: 0.85rem;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.servicio-card .btn-eliminar-fila:hover {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+/* ============================================
+   BOTÓN AGREGAR SERVICIO
+   ============================================ */
+
+.btn-add-service {
+    background: transparent;
+    border: 1px dashed #d1d5db;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: #6b7280;
+    transition: all 0.15s;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.btn-add-service:hover {
+    background: #f8faff;
+    border-color: #4361ee;
+    color: #4361ee;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .servicio-card {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.3rem;
+        padding: 0.5rem;
+    }
+    
+    .servicio-card .btn-eliminar-fila {
+        grid-column: 1 / -1;
+        justify-self: end;
+        width: auto;
+        height: auto;
+        padding: 0.2rem 0.5rem;
+        background: #fef2f2;
+        color: #ef4444;
+        border-radius: 4px;
+        font-size: 0.7rem;
+    }
+    
+    .servicio-card .btn-eliminar-fila:hover {
+        background: #fee2e2;
+    }
+}
+
+@media (max-width: 480px) {
+    .servicio-card {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
     }
 }
