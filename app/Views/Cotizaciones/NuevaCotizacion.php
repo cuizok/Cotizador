@@ -3,151 +3,163 @@ rel="stylesheet"
 href="<?= BASE_URL ?>/assets/css/Cotizaciones/NuevaCotizacion.css"
 >
 
-<section class="panel">
-    <div class="toolbar">
-        <h2><i class="fa-regular fa-file-lines"></i> Nueva Cotización</h2>
-        <div class="acciones">
-            <button id="btnVolver" class="btn-secondary">
-                <i class="fa-solid fa-arrow-left"></i>
-                Volver
+<section class="cot-page">
+
+    <!-- Header -->
+    <header class="cot-header">
+        <button id="btnVolver" class="btn-icon" title="Volver">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div class="cot-header-title">
+            <h1>Nueva Cotización</h1>
+            <p>Arma tu propuesta paso a paso</p>
+        </div>
+        <div class="cot-header-actions">
+            <button id="btnCancelar" class="btn-ghost">
+                <i class="fa-solid fa-xmark"></i> Cancelar
             </button>
+            <button id="btnGuardar" class="btn-solid">
+                <i class="fa-regular fa-floppy-disk"></i> Guardar cotización
+            </button>
+        </div>
+    </header>
+
+    <!-- Franja de estadísticas -->
+    <div class="stat-strip">
+        <div class="stat-card" id="statCardServicios">
+            <span class="stat-icon stat-icon--indigo"><i class="fa-solid fa-layer-group"></i></span>
+            <div class="stat-text">
+                <span class="stat-value" id="statServicios">0</span>
+                <span class="stat-label">Servicios</span>
+            </div>
+        </div>
+        <div class="stat-card" id="statCardCosto">
+            <span class="stat-icon stat-icon--green"><i class="fa-solid fa-sack-dollar"></i></span>
+            <div class="stat-text">
+                <span class="stat-value" id="statCosto">$0</span>
+                <span class="stat-label">Costo total</span>
+            </div>
+        </div>
+        <div class="stat-card" id="statCardTiempo">
+            <span class="stat-icon stat-icon--amber"><i class="fa-solid fa-hourglass-half"></i></span>
+            <div class="stat-text">
+                <span class="stat-value" id="statTiempo">0 días</span>
+                <span class="stat-label">Tiempo estimado</span>
+            </div>
+        </div>
+        <div class="stat-card" id="statCardProgreso">
+            <span class="stat-icon stat-icon--slate"><i class="fa-solid fa-circle-check"></i></span>
+            <div class="stat-text">
+                <span class="stat-value" id="statProgreso">0/3</span>
+                <span class="stat-label">Listo para guardar</span>
+            </div>
         </div>
     </div>
 
-    <div class="cotizacion-layout">
-        <!-- Columna Principal -->
-        <div class="col-formulario">
-            <!-- Card Única -->
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fa-regular fa-pen-to-square"></i> Datos del Proyecto</h3>
-                    <span id="contadorServicios" class="badge badge-primary">0</span>
+    <div class="cot-grid">
+        <!-- Columna principal -->
+        <div class="cot-main">
+
+            <!-- Mini-card: Cliente y título -->
+            <div class="mini-card">
+                <div class="mini-card-head">
+                    <span class="mini-card-num">Paso 1</span>
+                    <h2><i class="fa-regular fa-address-card"></i> Cliente y título</h2>
                 </div>
-                <div class="card-body">
-                    <!-- Fila Cliente + Título -->
-                    <div class="form-row">
-                        <div class="form-group">
+                <div class="mini-card-body">
+                    <div class="field-row">
+                        <div class="field">
                             <label for="cliente">Cliente <span class="required">*</span></label>
-                            <select id="cliente" class="form-control">
+                            <select id="cliente" class="field-control">
                                 <option value="">Seleccionar...</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="field">
                             <label for="titulo">Título <span class="required">*</span></label>
-                            <input type="text" id="titulo" class="form-control" placeholder="Ej: Sistema RH">
+                            <input type="text" id="titulo" class="field-control" placeholder="Ej: Sistema RH">
                         </div>
                     </div>
-                    
-                    <!-- Descripción -->
-                    <div class="form-group">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" class="form-control" rows="1" placeholder="Breve descripción..."></textarea>
-                    </div>
-
-                    <hr class="separador">
-
-                    <!-- Servicios -->
-                    <div>
-                        <label style="font-weight: 500; font-size: 0.6rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px;">
-                            <i class="fa-regular fa-list-check"></i> Servicios
-                        </label>
-                        <div class="table-responsive">
-                            <table class="tabla-servicios">
-                                <thead>
-                                    <tr>
-                                        <th style="width:20%">Servicio</th>
-                                        <th style="width:28%">Descripción</th>
-                                        <th style="width:15%">Costo ($)</th>
-                                        <th style="width:10%">Tiempo</th>
-                                        <th style="width:17%">Unidad</th>
-                                        <th style="width:10%"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbodyServicios">
-                                    <!-- Filas dinámicas -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <button id="btnAgregarServicio" class="btn-agregar">
-                            <i class="fa-solid fa-plus"></i> Agregar Servicio
-                        </button>
+                    <div class="field">
+                        <label for="descripcion">Descripción <span class="opt">(opcional)</span></label>
+                        <textarea id="descripcion" class="field-control" rows="1" placeholder="Breve descripción del proyecto..."></textarea>
                     </div>
                 </div>
             </div>
 
-            <!-- Card Resumen -->
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fa-regular fa-chart-simple"></i> Resumen</h3>
+            <!-- Mini-card: Servicios -->
+            <div class="mini-card">
+                <div class="mini-card-head">
+                    <span class="mini-card-num">Paso 2</span>
+                    <h2><i class="fa-solid fa-list-check"></i> Servicios</h2>
+                    <span class="chip-count" id="contadorServicios">0</span>
                 </div>
-                <div class="card-body">
-                    <div class="resumen-grid">
-                        <div class="resumen-item">
-                            <span class="resumen-label">Servicios</span>
-                            <span class="resumen-valor" id="totalServicios">0</span>
+                <div class="mini-card-body">
+                    <div class="servicios-list" id="tbodyServicios">
+                        <!-- Cards dinámicas de servicio -->
+                    </div>
+                    <button id="btnAgregarServicio" class="btn-add-service">
+                        <i class="fa-solid fa-plus"></i> Agregar servicio
+                    </button>
+
+                    <!-- Mini resumen pegado a los servicios, para no tener que subir la pantalla -->
+                    <div class="resumen-inline">
+                        <div class="resumen-inline-item">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span id="resumenInlineServicios">0</span> servicios
                         </div>
-                        <div class="resumen-item">
-                            <span class="resumen-label">Costo Total</span>
-                            <span class="resumen-valor" id="costoTotal">$0</span>
+                        <div class="resumen-inline-item">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                            <span id="resumenInlineCosto">$0.00</span>
                         </div>
-                        <div class="resumen-item">
-                            <span class="resumen-label">Tiempo</span>
-                            <span class="resumen-valor" id="tiempoTotal" style="font-size: 0.75rem;">0 días</span>
+                        <div class="resumen-inline-item">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                            <span id="resumenInlineTiempo">0 días</span>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button id="btnCancelar" class="btn-secondary">
-                        <i class="fa-solid fa-times"></i> Cancelar
-                    </button>
-                    <button id="btnGuardar" class="btn-primary">
-                        <i class="fa-regular fa-floppy-disk"></i> Guardar
-                    </button>
-                </div>
             </div>
+
         </div>
 
-        <!-- Panel Lateral -->
-        <div class="col-lateral">
-            <div class="card card-lateral">
-                <div class="card-header">
-                    <h3><i class="fa-regular fa-circle-info"></i> Vista Rápida</h3>
+        <!-- Panel lateral -->
+        <aside class="cot-side">
+            <div class="side-card">
+                <div class="side-card-head">
+                    <i class="fa-regular fa-eye"></i> Vista rápida
                 </div>
-                <div class="card-body">
-                    <div class="lateral-info">
-                        <div class="lateral-item">
-                            <span class="lateral-icon"><i class="fa-regular fa-user"></i></span>
-                            <div style="flex:1;min-width:0;">
-                                <span class="lateral-label">Cliente</span>
-                                <span class="lateral-valor" id="lateralCliente">-</span>
-                            </div>
-                        </div>
-                        <div class="lateral-item">
-                            <span class="lateral-icon"><i class="fa-regular fa-tag"></i></span>
-                            <div style="flex:1;min-width:0;">
-                                <span class="lateral-label">Título</span>
-                                <span class="lateral-valor" id="lateralTitulo">-</span>
-                            </div>
-                        </div>
+
+                <ul class="checklist">
+                    <li id="checkCliente" class="check-item">
+                        <i class="fa-regular fa-circle check-off"></i>
+                        <i class="fa-solid fa-circle-check check-on"></i>
+                        Cliente seleccionado
+                    </li>
+                    <li id="checkTitulo" class="check-item">
+                        <i class="fa-regular fa-circle check-off"></i>
+                        <i class="fa-solid fa-circle-check check-on"></i>
+                        Título definido
+                    </li>
+                    <li id="checkServicios" class="check-item">
+                        <i class="fa-regular fa-circle check-off"></i>
+                        <i class="fa-solid fa-circle-check check-on"></i>
+                        Al menos un servicio
+                    </li>
+                </ul>
+
+                <div class="side-preview">
+                    <div class="preview-row">
+                        <span><i class="fa-regular fa-user"></i> Cliente</span>
+                        <strong id="lateralCliente">-</strong>
                     </div>
-                    <hr>
-                    <div class="lateral-totales">
-                        <div class="total-item">
-                            <span class="total-label"><i class="fa-regular fa-circle-check"></i> Servicios</span>
-                            <span class="total-valor" id="lateralTotalServicios">0</span>
-                        </div>
-                        <div class="total-item">
-                            <span class="total-label"><i class="fa-regular fa-money-bill-1"></i> Costo</span>
-                            <span class="total-valor" id="lateralCostoTotal">$0</span>
-                        </div>
-                        <div class="total-item total-tiempo">
-                            <span class="total-label"><i class="fa-regular fa-clock"></i> Tiempo</span>
-                            <span class="total-valor" id="lateralTiempoTotal">0 días</span>
-                        </div>
+                    <div class="preview-row">
+                        <span><i class="fa-regular fa-tag"></i> Título</span>
+                        <strong id="lateralTitulo">-</strong>
                     </div>
                 </div>
+
+                <p class="side-hint">Los totales se calculan solos, arriba en la franja de estadísticas.</p>
             </div>
-        </div>
+        </aside>
     </div>
 </section>
 
