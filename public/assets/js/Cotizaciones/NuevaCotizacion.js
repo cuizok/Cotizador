@@ -34,6 +34,7 @@ const UNIDADES_KEYS = Object.keys(UNIDADES_TIEMPO);
 document.addEventListener('DOMContentLoaded', () => {
     cargarClientes();
     inicializarEventos();
+    renderizarTabla();
     actualizarVista();
 });
 
@@ -60,13 +61,13 @@ function inicializarEventos() {
     document.getElementById('cliente').addEventListener('change', (e) => {
         idClienteSeleccionado = e.target.value;
         const cliente = clientesList.find(c => c.id == idClienteSeleccionado);
-        document.getElementById('lateralCliente').textContent = cliente ? cliente.nombre : 'No seleccionado';
+        document.getElementById('lateralCliente').textContent = cliente ? cliente.nombre : '-';
         actualizarVista();
     });
 
     // Título
     document.getElementById('titulo').addEventListener('input', (e) => {
-        document.getElementById('lateralTitulo').textContent = e.target.value || 'Sin título';
+        document.getElementById('lateralTitulo').textContent = e.target.value.trim() || '-';
         actualizarVista();
     });
 
@@ -116,6 +117,16 @@ function agregarServicio() {
     detalleServicios.push(nuevoServicio);
     renderizarTabla();
     actualizarVista();
+
+    // Enfocar el primer campo de la nueva card
+    requestAnimationFrame(() => {
+        const cards = document.querySelectorAll('.servicio-card');
+        const ultima = cards[cards.length - 1];
+        if (ultima) {
+            const input = ultima.querySelector('[data-field="servicio"]');
+            if (input) input.focus();
+        }
+    });
 }
 
 // ============================================
@@ -123,56 +134,69 @@ function agregarServicio() {
 // ============================================
 
 function eliminarServicio(id) {
-    detalleServicios = detalleServicios.filter(s => s.id !== id);
-    renderizarTabla();
-    actualizarVista();
+    const card = document.querySelector(`.servicio-card[data-id="${id}"]`);
+
+    const quitar = () => {
+        detalleServicios = detalleServicios.filter(s => s.id !== id);
+        renderizarTabla();
+        actualizarVista();
+    };
+
+    if (card) {
+        card.classList.add('removing');
+        card.addEventListener('animationend', quitar, { once: true });
+    } else {
+        quitar();
+    }
 }
 
 // ============================================
-// RENDERIZAR TABLA
+// RENDERIZAR LISTA DE SERVICIOS (cards)
 // ============================================
 
 function renderizarTabla() {
-    const tbody = document.getElementById('tbodyServicios');
-    
+    const contenedor = document.getElementById('tbodyServicios');
+
     if (detalleServicios.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">
-                    <i class="fa-solid fa-plus-circle" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;"></i>
-                    Haz clic en "Agregar Servicio" para comenzar
-                </td>
-            </tr>
+        contenedor.innerHTML = `
+            <div class="servicio-vacio">
+                <i class="fa-solid fa-layer-group"></i>
+                Aún no hay servicios. Da clic en "Agregar servicio" para empezar.
+            </div>
         `;
+        actualizarContador();
         return;
     }
 
-    tbody.innerHTML = detalleServicios.map((servicio, index) => `
-        <tr data-id="${servicio.id}">
-            <td>
-                <input 
-                    type="text" 
-                    class="input-servicio" 
+    contenedor.innerHTML = detalleServicios.map((servicio, index) => `
+        <div class="servicio-card" data-id="${servicio.id}">
+            <div class="servicio-field">
+                <span class="mini-label">Servicio</span>
+                <input
+                    type="text"
+                    class="input-servicio"
                     value="${servicio.servicio}"
                     data-index="${index}"
                     data-field="servicio"
                     placeholder="Ej: Desarrollo Web"
                 >
-            </td>
-            <td>
-                <input 
-                    type="text" 
-                    class="input-servicio" 
+            </div>
+            <div class="servicio-field">
+                <span class="mini-label">Descripción</span>
+                <input
+                    type="text"
+                    class="input-servicio"
                     value="${servicio.descripcion}"
                     data-index="${index}"
                     data-field="descripcion"
-                    placeholder="Descripción del servicio"
+                    placeholder="Detalle breve"
                 >
-            </td>
-            <td>
-                <input 
-                    type="number" 
-                    class="input-servicio input-costo" 
+            </div>
+            <div class="servicio-field">
+                <span class="mini-label">Costo ($)</span>
+                <input
+                    type="number"
+                    class="input-servicio"
                     value="${servicio.costo}"
                     data-index="${index}"
                     data-field="costo"
@@ -180,21 +204,23 @@ function renderizarTabla() {
                     step="0.01"
                     placeholder="0.00"
                 >
-            </td>
-            <td>
-                <input 
-                    type="number" 
-                    class="input-servicio input-tiempo" 
+            </div>
+            <div class="servicio-field">
+                <span class="mini-label">Tiempo</span>
+                <input
+                    type="number"
+                    class="input-servicio"
                     value="${servicio.tiempo}"
                     data-index="${index}"
                     data-field="tiempo"
                     min="0.5"
                     step="0.5"
                 >
-            </td>
-            <td>
-                <select 
-                    class="input-servicio input-unidad" 
+            </div>
+            <div class="servicio-field">
+                <span class="mini-label">Unidad</span>
+                <select
+                    class="input-servicio"
                     data-index="${index}"
                     data-field="unidad_tiempo"
                 >
@@ -204,22 +230,20 @@ function renderizarTabla() {
                         </option>
                     `).join('')}
                 </select>
-            </td>
-            <td>
-                <button class="btn-eliminar-fila" onclick="eliminarServicio(${servicio.id})">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </td>
-        </tr>
+            </div>
+            <button class="btn-eliminar-fila" title="Quitar servicio" onclick="eliminarServicio(${servicio.id})">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>
     `).join('');
 
     // Eventos para actualizar datos en tiempo real
-    document.querySelectorAll('.input-servicio').forEach(input => {
+    contenedor.querySelectorAll('.input-servicio').forEach(input => {
         input.addEventListener('input', (e) => {
             const index = parseInt(e.target.dataset.index);
             const field = e.target.dataset.field;
             const value = e.target.type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value;
-            
+
             if (detalleServicios[index]) {
                 detalleServicios[index][field] = value;
                 actualizarVista();
@@ -240,8 +264,11 @@ function renderizarTabla() {
         });
     });
 
-    // Actualizar contador
-    document.getElementById('contadorServicios').textContent = `${detalleServicios.length} servicios`;
+    actualizarContador();
+}
+
+function actualizarContador() {
+    document.getElementById('contadorServicios').textContent = detalleServicios.length;
 }
 
 // ============================================
@@ -252,7 +279,7 @@ function actualizarVista() {
     // Calcular totales
     const totalServicios = detalleServicios.length;
     const costoTotal = detalleServicios.reduce((sum, s) => sum + (parseFloat(s.costo) || 0), 0);
-    
+
     // Calcular tiempo total en minutos
     let totalMinutos = 0;
     detalleServicios.forEach(s => {
@@ -260,18 +287,50 @@ function actualizarVista() {
         totalMinutos += (parseFloat(s.tiempo) || 0) * minutos;
     });
 
-    // Formatear tiempo
     const tiempoFormateado = formatearTiempo(totalMinutos);
 
-    // Actualizar resumen
-    document.getElementById('totalServicios').textContent = totalServicios;
-    document.getElementById('costoTotal').textContent = `$${costoTotal.toFixed(2)}`;
-    document.getElementById('tiempoTotal').textContent = tiempoFormateado;
+    // Actualizar franja de estadísticas (con pulso si cambió el valor)
+    actualizarStat('statServicios', totalServicios);
+    actualizarStat('statCosto', `$${costoTotal.toFixed(2)}`);
+    actualizarStat('statTiempo', tiempoFormateado);
 
-    // Actualizar panel lateral
-    document.getElementById('lateralTotalServicios').textContent = totalServicios;
-    document.getElementById('lateralCostoTotal').textContent = `$${costoTotal.toFixed(2)}`;
-    document.getElementById('lateralTiempoTotal').textContent = tiempoFormateado;
+    // Mini resumen pegado a la lista de servicios (misma info, sin subir la pantalla)
+    const resumenServicios = document.getElementById('resumenInlineServicios');
+    const resumenCosto = document.getElementById('resumenInlineCosto');
+    const resumenTiempo = document.getElementById('resumenInlineTiempo');
+    if (resumenServicios) resumenServicios.textContent = totalServicios;
+    if (resumenCosto) resumenCosto.textContent = `$${costoTotal.toFixed(2)}`;
+    if (resumenTiempo) resumenTiempo.textContent = tiempoFormateado;
+
+    // Checklist / progreso
+    const clienteOk = !!document.getElementById('cliente').value;
+    const tituloOk = !!document.getElementById('titulo').value.trim();
+    const serviciosOk = totalServicios > 0;
+
+    marcarCheck('checkCliente', clienteOk);
+    marcarCheck('checkTitulo', tituloOk);
+    marcarCheck('checkServicios', serviciosOk);
+
+    const completados = [clienteOk, tituloOk, serviciosOk].filter(Boolean).length;
+    actualizarStat('statProgreso', `${completados}/3`);
+}
+
+function actualizarStat(id, valor) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const valorStr = String(valor);
+    if (el.textContent !== valorStr) {
+        el.textContent = valorStr;
+        el.classList.remove('pulse');
+        void el.offsetWidth; // reiniciar animación
+        el.classList.add('pulse');
+    }
+}
+
+function marcarCheck(id, ok) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('done', ok);
 }
 
 // ============================================
@@ -304,7 +363,6 @@ function formatearTiempo(totalMinutos) {
     if (horas > 0 && partes.length < 3) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
     if (minutos > 0 && partes.length < 3) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
 
-    // Si hay más de 3 partes, mostrar solo las 3 principales
     if (partes.length > 3) {
         return partes.slice(0, 3).join(' ') + '...';
     }
@@ -317,8 +375,8 @@ function formatearTiempo(totalMinutos) {
 // ============================================
 
 function cancelarCotizacion() {
-    if (detalleServicios.length > 0 || 
-        document.getElementById('titulo').value || 
+    if (detalleServicios.length > 0 ||
+        document.getElementById('titulo').value ||
         document.getElementById('cliente').value) {
         if (!confirm('¿Estás seguro de cancelar? Se perderán todos los datos.')) {
             return;
@@ -410,13 +468,14 @@ async function guardarCotizacion() {
             }, 1500);
         } else {
             mostrarToast(result.mensaje || 'Error al guardar la cotización', 'error');
+            btnGuardar.innerHTML = textoOriginal;
+            btnGuardar.disabled = false;
         }
     } catch (error) {
         console.error('Error:', error);
         mostrarToast('Error de conexión al guardar', 'error');
-    } finally {
         const btnGuardar = document.getElementById('btnGuardar');
-        btnGuardar.innerHTML = '<i class="fa-solid fa-save"></i> Guardar Cotización';
+        btnGuardar.innerHTML = '<i class="fa-regular fa-floppy-disk"></i> Guardar cotización';
         btnGuardar.disabled = false;
     }
 }
@@ -426,7 +485,6 @@ async function guardarCotizacion() {
 // ============================================
 
 function mostrarToast(mensaje, tipo = 'info') {
-    // Eliminar toast anterior si existe
     const existing = document.querySelector('.toast-container');
     if (existing) existing.remove();
 
@@ -435,7 +493,7 @@ function mostrarToast(mensaje, tipo = 'info') {
 
     const toast = document.createElement('div');
     toast.className = `toast toast-${tipo}`;
-    
+
     const iconos = {
         success: 'fa-solid fa-check-circle',
         error: 'fa-solid fa-exclamation-circle',
@@ -451,7 +509,6 @@ function mostrarToast(mensaje, tipo = 'info') {
     container.appendChild(toast);
     document.body.appendChild(container);
 
-    // Auto cerrar después de 3 segundos
     setTimeout(() => {
         if (container.parentNode) {
             container.remove();
