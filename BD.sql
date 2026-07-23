@@ -152,5 +152,29 @@ VALUES
     '$2y$10$FN3ReC3iv3QrCQbIpq9Rk.E6IXuHgCFGZ75JGx8ivGHlSkc8OIi8i'
 );
 
+CREATE TABLE IF NOT EXISTS ajustes (
+
+    idAjuste INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+
+    remitente VARCHAR(100) NULL,
+
+    mensajePresentacion VARCHAR(512) NULL,
+
+    mensajeAgradecimiento VARCHAR(512) NULL,
+
+    mensajePie VARCHAR(512) NULL
+
+);
+create table if not exists caracteristicas_cotizaciones (
+  id             int not null auto_increment,
+  idCotizacion   bigint unsigned not null,
+  caracteristica varchar(255)    not null,
+  primary key (id),
+  foreign key (idCotizacion) references cotizaciones (id)
+    on delete cascade
+    on update cascade
+);
+
+
 
 
