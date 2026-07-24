@@ -505,6 +505,7 @@ function formatearTiempo(totalMinutos) {
 // ============================================
 // ACTUALIZAR COTIZACIÓN (Guardar cambios)
 // ============================================
+// EditarCotizacion.js
 
 async function actualizarCotizacion() {
     // Validaciones
@@ -523,11 +524,12 @@ async function actualizarCotizacion() {
         return;
     }
 
+    /*
     if (detalleServicios.length === 0) {
         mostrarToast('Agrega al menos un servicio', 'error');
         return;
     }
-
+*/
     // Verificar servicios sin nombre
     const serviciosIncompletos = detalleServicios.filter(s => !s.servicio.trim());
     if (serviciosIncompletos.length > 0) {
@@ -535,19 +537,12 @@ async function actualizarCotizacion() {
         return;
     }
 
-    // Calcular totales
-    let totalCosto = 0;
-    let totalMinutos = 0;
-    detalleServicios.forEach(s => {
-        totalCosto += Number(s.costo) || 0;
-        const minutos = UNIDADES_TIEMPO[s.unidad_tiempo]?.minutos || 0;
-        totalMinutos += (Number(s.tiempo) || 0) * minutos;
-    });
-
+    // ✅ YA NO calculamos totales aquí, el backend lo hará
     const data = {
         id_cliente: parseInt(clienteId),
         titulo: titulo,
         descripcion: document.getElementById("descripcion").value.trim() || null,
+        estatus: 'PENDIENTE',
         detalles: detalleServicios.map(s => ({
             servicio: s.servicio.trim(),
             descripcion: s.descripcion.trim() || null,
@@ -558,14 +553,13 @@ async function actualizarCotizacion() {
     };
 
     try {
-        // Mostrar loading
         const btnActualizar = document.getElementById("btnActualizar");
         const textoOriginal = btnActualizar.innerHTML;
         btnActualizar.innerHTML = '<span class="spinner"></span> Actualizando...';
         btnActualizar.disabled = true;
 
         const response = await fetch(
-            `/Blackcore/Cotizador/public/Update-cotizacion?id=${ID_COTIZACION}`,
+            `/Blackcore/Cotizador/public/Update-Cotizacion?id=${ID_COTIZACION}`,
             {
                 method: 'PUT',
                 headers: {
@@ -579,8 +573,10 @@ async function actualizarCotizacion() {
 
         if (response.ok) {
             mostrarToast(result.mensaje || 'Cotización actualizada exitosamente', 'success');
-            // Recargar la cotización para actualizar los datos originales
+            
+            // ✅ Recargar la cotización para mostrar los totales recalculados
             await cargarCotizacion();
+            
             setTimeout(() => {
                 window.location.href = '/Blackcore/Cotizador/public/Cotizaciones';
             }, 1500);

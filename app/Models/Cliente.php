@@ -114,4 +114,46 @@ public function desactivar($id)
     return $stmt->rowCount() > 0;
 }
 
+   // ============================================
+    // NUEVO MÉTODO PARA CONTAR CLIENTES ACTIVOS
+    // ============================================
+
+    public function contarActivos()
+    {
+        $sql = "SELECT COUNT(*) as total FROM clientes WHERE estatus = 'ACTIVO'";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Contar clientes por estatus
+     */
+    public function contarPorEstatus($estatus)
+    {
+        $sql = "SELECT COUNT(*) as total FROM clientes WHERE estatus = :estatus";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':estatus' => $estatus]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Obtener estadísticas de clientes
+     */
+    public function obtenerEstadisticas()
+    {
+        $sql = "
+            SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN estatus = 'ACTIVO' THEN 1 ELSE 0 END) as activos,
+                SUM(CASE WHEN estatus = 'INACTIVO' THEN 1 ELSE 0 END) as inactivos
+            FROM clientes
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }

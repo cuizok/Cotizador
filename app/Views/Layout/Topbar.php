@@ -1,22 +1,32 @@
-<main class="content">
+<!-- ============================================ -->
+<!-- TOPBAR MEJORADO                              -->
+<!-- ============================================ -->
 
 <header class="topbar">
-
-    <h1><?= $title ?? '' ?></h1>
-
-    <div class="user">
-
-        <i class="fa-solid fa-user"></i>
-
-        <span><?= $_SESSION['nombre'] ?? 'Usuario' ?></span>
-
-        <button id="btnLogout"
-                title="Cerrar sesión">
-
-            <i class="fa-solid fa-right-from-bracket"></i>
-
+    <div class="topbar-left">
+        <!-- Botón toggle para móvil -->
+        <button class="topbar-toggle" id="topbarToggle" title="Abrir menú">
+            <i class="fa-solid fa-bars"></i>
         </button>
 
     </div>
 
+    <div class="topbar-right">
+        <!-- Notificaciones -->
+        <button class="topbar-btn" title="Notificaciones">
+            <i class="fa-regular fa-bell"></i>
+            <span class="btn-badge">3</span>
+        </button>
+
+        <!-- Ayuda -->
+        <button class="topbar-btn" title="Ayuda">
+            <i class="fa-regular fa-circle-question"></i>
+        </button>
+
+        <!-- Perfil (visible solo en móvil) -->
+        <div class="topbar-user mobile-only">
+            <i class="fa-solid fa-user"></i>
+            <span><?= $_SESSION['nombre'] ?? 'Usuario' ?></span>
+        </div>
+    </div>
 </header>

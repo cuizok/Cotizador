@@ -95,3 +95,10 @@ $router->get('/Add/NuevaCotizacion', 'CotizacionController@NuevaCotizacionView')
 $router->get('/Edit/EditarCotizacion', 'CotizacionController@EditCotizacionView');
 
 
+
+
+
+// ======================================================
+// API DASHBOARD
+// ======================================================
+$router->get('/DashboardData', 'CotizacionController@dashboardData');

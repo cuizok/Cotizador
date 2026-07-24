@@ -162,15 +162,50 @@ class Cotizacion extends Model
     }
     
 
-    public function actualizar($id, array $data)
-    {
+     
+public function actualizar($id, array $data) {
+    try {
+        // Iniciar transacción
+        $this->db->beginTransaction();
+
+        // 1. Actualizar los detalles (si vienen en la data)
+        if (isset($data['detalles']) && is_array($data['detalles'])) {
+            // Eliminar detalles existentes
+            $sql = "DELETE FROM detalle_cotizacion WHERE id_cotizacion = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id' => $id]);
+
+            // Insertar nuevos detalles
+            foreach ($data['detalles'] as $detalle) {
+                $sql = "INSERT INTO detalle_cotizacion 
+                        (id_cotizacion, servicio, descripcion, costo, tiempo, unidad_tiempo) 
+                        VALUES 
+                        (:id_cotizacion, :servicio, :descripcion, :costo, :tiempo, :unidad_tiempo)";
+                
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute([
+                    ':id_cotizacion' => $id,
+                    ':servicio' => $detalle['servicio'],
+                    ':descripcion' => $detalle['descripcion'] ?? null,
+                    ':costo' => $detalle['costo'] ?? 0,
+                    ':tiempo' => $detalle['tiempo'] ?? 0,
+                    ':unidad_tiempo' => $detalle['unidad_tiempo'] ?? 'HORAS'
+                ]);
+            }
+        }
+
+        // 2. Recalcular totales automáticamente
+        $costoTotal = $this->recalcularCostoTotal($id);
+        $tiempoTotalMinutos = $this->recalcularTiempoTotal($id);
+
+        // 3. Actualizar la cotización - SIEMPRE BORRADOR
         $sql = "
             UPDATE cotizaciones
             SET
                 id_cliente = :id_cliente,
                 titulo = :titulo,
                 descripcion = :descripcion,
-                estatus = :estatus,
+                estatus = 'BORRADOR',  -- ← SIEMPRE BORRADOR
                 costo_total = :costo_total,
                 tiempo_total_minutos = :tiempo_total_minutos,
                 updated_at = NOW()
@@ -178,23 +213,29 @@ class Cotizacion extends Model
         ";
 
         $stmt = $this->db->prepare($sql);
-
         $stmt->execute([
             ':id' => $id,
-            'id_cliente' => $data['id_cliente'],
+            ':id_cliente' => $data['id_cliente'],
             ':titulo' => $data['titulo'],
-            ':descripcion' => $data['descripcion'],
-            ':estatus' => $data['estatus'],
-            ':costo_total' => $data['costo_total'],
-            ':tiempo_total_minutos' => $data['tiempo_total_minutos']
+            ':descripcion' => $data['descripcion'] ?? null,
+            ':costo_total' => $costoTotal,
+            ':tiempo_total_minutos' => $tiempoTotalMinutos
         ]);
 
-        return $stmt->rowCount() > 0;
-    }
+        // Confirmar transacción
+        $this->db->commit();
 
-    public function recalcularCostoTotal($idCotizacion)
-    {
-        // Obtener la suma de todos los costos
+        return $stmt->rowCount() > 0;
+
+    } catch (PDOException $e) {
+        // Revertir en caso de error
+        $this->db->rollBack();
+        error_log("Error al actualizar cotización: " . $e->getMessage());
+        return false;
+    }
+}
+
+     public function recalcularCostoTotal($idCotizacion) {
         $sql = "
             SELECT COALESCE(SUM(costo), 0) AS total
             FROM detalle_cotizacion
@@ -202,94 +243,36 @@ class Cotizacion extends Model
         ";
 
         $stmt = $this->db->prepare($sql);
-
-        $stmt->execute([
-            ':id' => $idCotizacion
-        ]);
-
-        $total = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
-
-        // Actualizar la cotización
+        $stmt->execute([':id' => $idCotizacion]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result['total'] ?? 0;
+    }
+     /**
+     * Recalcular el tiempo total en minutos de una cotización
+     */
+    public function recalcularTiempoTotal($idCotizacion) {
         $sql = "
-            UPDATE cotizaciones
-            SET
-                costo_total = :total,
-                updated_at = NOW()
-            WHERE id = :id
+            SELECT
+                SUM(
+                    CASE unidad_tiempo
+                        WHEN 'MINUTOS' THEN tiempo
+                        WHEN 'HORAS' THEN tiempo * 60
+                        WHEN 'DIAS' THEN tiempo * 1440
+                        WHEN 'SEMANAS' THEN tiempo * 10080
+                        WHEN 'MESES' THEN tiempo * 43200
+                        WHEN 'ANIOS' THEN tiempo * 525600
+                        ELSE 0
+                    END
+                ) AS total
+            FROM detalle_cotizacion
+            WHERE id_cotizacion = :id
         ";
 
         $stmt = $this->db->prepare($sql);
-
-        $stmt->execute([
-            ':total' => $total,
-            ':id' => $idCotizacion
-        ]);
+        $stmt->execute([':id' => $idCotizacion]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result['total'] ?? 0;
     }
-
-    public function recalcularTiempoTotal($idCotizacion)
-{
-
-    $sql="
-
-        SELECT
-
-        SUM(
-
-            CASE unidad_tiempo
-
-                WHEN 'MINUTOS' THEN tiempo
-
-                WHEN 'HORAS' THEN tiempo*60
-
-                WHEN 'DIAS' THEN tiempo*1440
-
-                WHEN 'SEMANAS' THEN tiempo*10080
-
-                WHEN 'MESES' THEN tiempo*43200
-
-                WHEN 'ANIOS' THEN tiempo*525600
-
-            END
-
-        ) total
-
-        FROM detalle_cotizacion
-
-        WHERE id_cotizacion=:id
-
-    ";
-
-    $stmt=$this->db->prepare($sql);
-
-    $stmt->execute([
-
-        ":id"=>$idCotizacion
-
-    ]);
-
-    $total=$stmt->fetch(PDO::FETCH_ASSOC);
-
-    $sql="
-
-        UPDATE cotizaciones
-
-        SET
-
-        tiempo_total_minutos=:total
-
-        WHERE id=:id
-
-    ";
-
-    $stmt=$this->db->prepare($sql);
-
-    $stmt->execute([
-
-        ":total"=>$total["total"] ?? 0,
-
-        ":id"=>$idCotizacion
-
-    ]);
-
-}
 }

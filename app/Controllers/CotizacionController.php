@@ -173,47 +173,170 @@ public function store()
 }
 
 
-public function update()
-{
+public function update() {
     $id = $_GET['id'] ?? null;
 
     if (!$id) {
-
         http_response_code(400);
-
         echo json_encode([
             'mensaje' => 'ID requerido'
         ]);
-
         return;
     }
 
-    $data = json_decode(
-        file_get_contents('php://input'),
-        true
-    );
+    // Obtener los datos del frontend
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    // Validar datos básicos
+    if (!isset($data['id_cliente']) || !isset($data['titulo'])) {
+        http_response_code(400);
+        echo json_encode([
+            'mensaje' => 'Faltan datos requeridos: id_cliente y titulo'
+        ]);
+        return;
+    }
 
     $cotizacion = new Cotizacion();
 
-    $actualizado = $cotizacion->actualizar(
-        $id,
-        $data
-    );
+    try {
+        $actualizado = $cotizacion->actualizar($id, $data);
 
-    if (!$actualizado) {
+        if (!$actualizado) {
+            http_response_code(404);
+            echo json_encode([
+                'mensaje' => 'Cotización no encontrada o sin cambios'
+            ]);
+            return;
+        }
 
-        http_response_code(404);
+        // Obtener la cotización actualizada para devolverla
+        $cotizacionActualizada = $cotizacion->obtenerPorId($id);
 
         echo json_encode([
-            'mensaje' => 'Cotizacion no encontrada'
+            'mensaje' => 'Cotización actualizada correctamente',
+            'cotizacion' => $cotizacionActualizada
         ]);
 
-        return;
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'mensaje' => 'Error al actualizar: ' . $e->getMessage()
+        ]);
     }
 
-    echo json_encode([
-        'mensaje' => 'Cotizacion actualizada correctamente'
-    ]);
 }
+
+  // ============================================
+    // API - DASHBOARD
+    // ============================================
+
+    public function dashboardData()
+    {
+        $cotizacion = new Cotizacion();
+        $cliente = new Cliente();  // ← NUEVO: instanciar Cliente
+
+        // 1. Obtener todas las cotizaciones
+        $cotizaciones = $cotizacion->obtenerTodas();
+
+        // 2. Estadísticas básicas usando el modelo Cliente
+        $totalClientes = $cliente->contarActivos();  // ← AHORA usa el modelo
+        $totalCotizaciones = count($cotizaciones);
+
+        // 3. Calcular ventas, pendientes, etc.
+        $ventas = 0;
+        $pendientes = 0;
+        $borradores = 0;
+        $enviadas = 0;
+        $rechazadas = 0;
+        $aceptadas = 0;
+
+        foreach ($cotizaciones as $c) {
+            if ($c['estatus'] === 'ACEPTADA') {
+                $ventas += floatval($c['costo_total'] ?? 0);
+                $aceptadas++;
+            }
+
+            switch ($c['estatus']) {
+                case 'BORRADOR': $borradores++; break;
+                case 'ENVIADA': $enviadas++; break;
+                case 'RECHAZADA': $rechazadas++; break;
+                default: $pendientes++;
+            }
+        }
+
+        // 4. Datos para gráfica de estatus
+        $porEstatus = [];
+        if ($borradores > 0) {
+            $porEstatus[] = ['label' => 'BORRADOR', 'value' => $borradores, 'color' => '#94a3b8'];
+        }
+        if ($enviadas > 0) {
+            $porEstatus[] = ['label' => 'ENVIADA', 'value' => $enviadas, 'color' => '#3b82f6'];
+        }
+        if ($aceptadas > 0) {
+            $porEstatus[] = ['label' => 'ACEPTADA', 'value' => $aceptadas, 'color' => '#22c55e'];
+        }
+        if ($rechazadas > 0) {
+            $porEstatus[] = ['label' => 'RECHAZADA', 'value' => $rechazadas, 'color' => '#ef4444'];
+        }
+        if ($pendientes > 0) {
+            $porEstatus[] = ['label' => 'PENDIENTE', 'value' => $pendientes, 'color' => '#f59e0b'];
+        }
+
+        // 5. Tendencia mensual
+        $tendencia = $this->calcularTendenciaMensual($cotizaciones);
+
+        // 6. Últimas cotizaciones (5)
+        $recientes = array_slice($cotizaciones, 0, 5);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'totales' => [
+                    'clientes' => $totalClientes,
+                    'cotizaciones' => $totalCotizaciones,
+                    'ventas' => $ventas,
+                    'pendientes' => $pendientes + $borradores
+                ],
+                'por_estatus' => $porEstatus,
+                'tendencia_mensual' => $tendencia,
+                'recientes' => $recientes
+            ]
+        ]);
+    }
+
+    // ============================================
+    // MÉTODOS PRIVADOS
+    // ============================================
+
+    /**
+     * Calcular tendencia de cotizaciones por mes (últimos 6 meses)
+     */
+    private function calcularTendenciaMensual($cotizaciones)
+    {
+        $meses = [];
+        $labels = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $mes = date('Y-m', strtotime("-$i months"));
+            $labels[] = date('M', strtotime("-$i months"));
+            $meses[$mes] = 0;
+        }
+
+        foreach ($cotizaciones as $c) {
+            if (isset($c['created_at'])) {
+                $mes = date('Y-m', strtotime($c['created_at']));
+                if (isset($meses[$mes])) {
+                    $meses[$mes]++;
+                }
+            }
+        }
+
+        return [
+            'labels' => $labels,
+            'values' => array_values($meses)
+        ];
+    }
+
 
 }
