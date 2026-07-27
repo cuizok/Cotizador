@@ -6,6 +6,8 @@
 
 $router->get('/ClienteAll', 'ClienteController@index');
 
+$router->get('/ClientesActivos', 'ClienteController@clientesActivos');
+
 $router->get('/clienteById', 'ClienteController@show');
 
 $router->post('/Insert-cliente', 'ClienteController@store');

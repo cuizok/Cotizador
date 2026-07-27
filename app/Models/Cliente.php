@@ -18,6 +18,21 @@ class Cliente extends Model
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+        public function obtenerClientesActivos()
+    {
+        $sql = "
+            SELECT *
+            FROM clientes WHERE estatus = 'ACTIVO'
+            ORDER BY id DESC
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function obtenerPorId($id)
     {
         $sql = "

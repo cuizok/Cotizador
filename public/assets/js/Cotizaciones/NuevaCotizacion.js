@@ -73,6 +73,24 @@ function inicializarEventos() {
 
     // Descripción
     document.getElementById('descripcion').addEventListener('input', actualizarVista);
+
+
+    document.getElementById('tbodyServicios').addEventListener('click', function(e) {
+        console.log('Click en tbodyServicios');
+        const btn = e.target.closest('.btn-eliminar-fila');
+        console.log('btn encontrado:', btn);
+        if (btn) {
+            const card = btn.closest('.servicio-card');
+            console.log('card encontrada:', card);
+            if (card) {
+                const id = parseInt(card.dataset.id);
+                console.log('ID a eliminar:', id);
+                if (!isNaN(id)) {
+                    eliminarServicio(id);
+                }
+            }
+        }
+    });
 }
 
 // ============================================
@@ -81,7 +99,7 @@ function inicializarEventos() {
 
 async function cargarClientes() {
     try {
-        const response = await fetch('/Blackcore/Cotizador/public/ClienteAll');
+        const response = await fetch('/Blackcore/Cotizador/public/ClientesActivos');
         const data = await response.json();
         clientesList = data;
 
@@ -134,20 +152,22 @@ function agregarServicio() {
 // ============================================
 
 function eliminarServicio(id) {
-    const card = document.querySelector(`.servicio-card[data-id="${id}"]`);
-
-    const quitar = () => {
-        detalleServicios = detalleServicios.filter(s => s.id !== id);
-        renderizarTabla();
-        actualizarVista();
-    };
-
-    if (card) {
-        card.classList.add('removing');
-        card.addEventListener('animationend', quitar, { once: true });
-    } else {
-        quitar();
+    // No permitir eliminar el último servicio
+    if (detalleServicios.length <= 1) {
+        mostrarToast('Debe haber al menos un servicio', 'warning');
+        return;
     }
+
+    // Eliminar directamente del array
+    detalleServicios = detalleServicios.filter(s => s.id !== id);
+    
+    // Re-renderizar la tabla
+    renderizarTabla();
+    
+    // Actualizar la vista (totales, etc.)
+    actualizarVista();
+    
+    mostrarToast('Servicio eliminado', 'info');
 }
 
 // ============================================
@@ -231,7 +251,7 @@ function renderizarTabla() {
                     `).join('')}
                 </select>
             </div>
-            <button class="btn-eliminar-fila" title="Quitar servicio" onclick="eliminarServicio(${servicio.id})">
+            <button class="btn-eliminar-fila" title="Quitar servicio">
                 <i class="fa-solid fa-trash"></i>
             </button>
         </div>
@@ -407,10 +427,13 @@ async function guardarCotizacion() {
         return;
     }
 
+
+    /*
     if (detalleServicios.length === 0) {
         mostrarToast('Agrega al menos un servicio', 'error');
         return;
     }
+        */
 
     // Verificar que todos los servicios tengan nombre
     const serviciosIncompletos = detalleServicios.filter(s => !s.servicio.trim());

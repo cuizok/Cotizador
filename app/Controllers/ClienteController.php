@@ -39,6 +39,29 @@ public function index()
 
     }
 }
+
+public function clientesActivos()
+{
+    try {
+
+        $cliente = new Cliente();
+
+        $clientes = $cliente->obtenerClientesActivos();
+
+        header('Content-Type: application/json');
+
+        echo json_encode($clientes);
+
+    } catch (Exception $e) {
+
+        http_response_code(500);
+
+        echo json_encode([
+            "mensaje" => $e->getMessage()
+        ]);
+
+    }
+}
     public function show()
     {
         $id = $_GET['id'] ?? null;

@@ -20,23 +20,6 @@
         </div>
     </div>
 
-    <!-- Perfil de usuario -->
-    <div class="sidebar-profile">
-        <div class="profile-avatar">
-            <i class="fa-solid fa-user"></i>
-        </div>
-        <div class="profile-info">
-            <span class="profile-name">
-                <?= $_SESSION['nombre'] ?? 'Usuario' ?>
-            </span>
-            <span class="profile-role">
-                <?= $_SESSION['rol'] ?? 'Colaborador' ?>
-            </span>
-        </div>
-        <button class="profile-logout" id="btnLogoutSidebar" title="Cerrar sesión">
-            <i class="fa-solid fa-right-from-bracket"></i>
-        </button>
-    </div>
 
     <!-- Navegación -->
     <nav class="sidebar-nav">
@@ -66,6 +49,25 @@
             <span>Ajustes de Presentación</span>
         </a>
     </nav>
+
+        <!-- Perfil de usuario -->
+    <div class="sidebar-profile">
+        <div class="profile-avatar">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="profile-info">
+            <span class="profile-name">
+                <?= $_SESSION['nombre'] ?? 'Usuario' ?>
+            </span>
+            <span class="profile-role">
+                <?= $_SESSION['rol'] ?? 'Colaborador' ?>
+            </span>
+        </div>
+        <button class="profile-logout" id="btnLogoutSidebar" title="Cerrar sesión">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+    </div>
+
 
     <!-- Footer del sidebar -->
     <div class="sidebar-footer">

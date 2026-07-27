@@ -96,7 +96,7 @@ async function cargarCotizacion() {
 async function cargarClientes() {
     try {
         const response = await fetch(
-            "/Blackcore/Cotizador/public/ClienteAll"
+            "/Blackcore/Cotizador/public/ClientesActivos"
         );
 
         if (!response.ok) {
@@ -537,7 +537,6 @@ async function actualizarCotizacion() {
         return;
     }
 
-    // ✅ YA NO calculamos totales aquí, el backend lo hará
     const data = {
         id_cliente: parseInt(clienteId),
         titulo: titulo,
@@ -574,7 +573,7 @@ async function actualizarCotizacion() {
         if (response.ok) {
             mostrarToast(result.mensaje || 'Cotización actualizada exitosamente', 'success');
             
-            // ✅ Recargar la cotización para mostrar los totales recalculados
+            // Recargar la cotización para mostrar los totales recalculados
             await cargarCotizacion();
             
             setTimeout(() => {
