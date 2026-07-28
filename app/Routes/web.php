@@ -96,6 +96,14 @@ $router->get('/Add/NuevaCotizacion', 'CotizacionController@NuevaCotizacionView')
 
 $router->get('/Edit/EditarCotizacion', 'CotizacionController@EditCotizacionView');
 
+$router->get('/Ajustes', 'AjustesController@AjustesView');
+
+$router->get('/AjustesData', 'AjustesController@show');
+
+$router->put('/Update-Ajustes', 'AjustesController@update');
+
+
+$router->get('/GenerarPDF', 'PDFController@generarPDF');
 
 
 

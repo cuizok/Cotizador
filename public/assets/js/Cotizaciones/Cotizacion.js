@@ -9,6 +9,25 @@ const UNIDADES_TIEMPO = {
     ANIOS:{ label:"Años", minutos:525600 }
 };
 
+// ============================================
+// EVENTO DEL BOTÓN PDF
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btnPDF = document.getElementById('btnGenerarPDF');
+    if (btnPDF) {
+        btnPDF.addEventListener('click', function() {
+            const id = this.dataset.idCotizacion;
+            if (id) {
+                // ✅ Abrir en nueva pestaña
+                window.open(`/Blackcore/Cotizador/public/GenerarPDF?id=${id}`, '_blank');
+                // ⬆️ Esto ya abre en nueva pestaña
+            } else {
+                mostrarToast('No se encontró la cotización', 'error');
+            }
+        });
+    }
+});
 document.addEventListener("DOMContentLoaded", () => {
 
    cargarCotizaciones();
@@ -133,6 +152,45 @@ async function cargarCotizaciones(){
 
 }
 
+// ============================================
+// FORMATEAR TIEMPO (minutos → texto legible)
+// ============================================
+
+function formatearTiempo(totalMinutos) {
+    if (!totalMinutos || totalMinutos === 0) return '0 minutos';
+
+    const años = Math.floor(totalMinutos / 525600);
+    totalMinutos %= 525600;
+
+    const meses = Math.floor(totalMinutos / 43200);
+    totalMinutos %= 43200;
+
+    const semanas = Math.floor(totalMinutos / 10080);
+    totalMinutos %= 10080;
+
+    const dias = Math.floor(totalMinutos / 1440);
+    totalMinutos %= 1440;
+
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = Math.floor(totalMinutos % 60);
+
+    const partes = [];
+    
+    if (años > 0) partes.push(`${años} año${años > 1 ? 's' : ''}`);
+    if (meses > 0) partes.push(`${meses} mes${meses > 1 ? 'es' : ''}`);
+    if (semanas > 0) partes.push(`${semanas} semana${semanas > 1 ? 's' : ''}`);
+    if (dias > 0) partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
+    if (horas > 0 && partes.length < 3) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
+    if (minutos > 0 && partes.length < 3) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
+
+    // Si hay más de 3 partes, mostrar solo las 3 principales
+    if (partes.length > 3) {
+        return partes.slice(0, 3).join(' ') + '...';
+    }
+
+    return partes.join(' ') || '0 minutos';
+}
+
 function abrirPanelDetalle(){
 
     document
@@ -165,228 +223,211 @@ document
 .getElementById("overlayDetalle")
 .addEventListener("click",cerrarPanelDetalle);
 
-
-
 async function cargarCotizacionbyId(id){
-
-
     try{
-
-
         const response = await fetch(
             `/Blackcore/Cotizador/public/CotizacionById?id=${id}`
         );
 
-
         const cotizacion = await response.json();
-
         detalleServicios = cotizacion.detalles;
 
+        const contenido = document.getElementById("contenidoDetalle");
 
+        contenido.innerHTML = `
 
-const contenido = document.getElementById("contenidoDetalle");
+        <div class="detalle-seccion">
 
-contenido.innerHTML = `
+            <div class="detalle-titulo">
 
-<div class="detalle-seccion">
+                Información General
 
-    <div class="detalle-titulo">
+            </div>
 
-        Información General
-
-    </div>
-
-    <h2>${cotizacion.titulo}</h2>
-
-    <p>
-
-        ${cotizacion.descripcion}
-
-    </p>
-
-</div>
-
-<div class="detalle-seccion">
-
-    <div class="detalle-titulo">
-
-        Cliente
-
-    </div>
-
-    <div class="card-cliente">
-
-        <h3>
-
-            ${cotizacion.cliente}
-
-        </h3>
-
-        <p>
-
-            <i class="fa-solid fa-building"></i>
-
-            ${cotizacion.empresa}
-
-        </p>
-
-        <p>
-
-            <i class="fa-solid fa-envelope"></i>
-
-            ${cotizacion.correo}
-
-        </p>
-
-        <p>
-
-            <i class="fa-solid fa-phone"></i>
-
-            ${cotizacion.telefono}
-
-        </p>
-
-    </div>
-
-</div>
-
-<div class="detalle-seccion">
-
-    <div class="detalle-titulo">
-
-        Resumen
-
-    </div>
-
-    <div class="resumen-grid">
-
-        <div class="resumen-item">
-
-            <i class="fa-solid fa-dollar-sign"></i>
-
-            <h4>
-
-                $${parseFloat(cotizacion.costo_total).toLocaleString()}
-
-            </h4>
-
-            <span>
-
-                Costo Total
-
-            </span>
-
-        </div>
-
-        <div class="resumen-item">
-
-            <i class="fa-solid fa-clock"></i>
-
-            <h4>
-
-                ${cotizacion.tiempo_total_minutos}
-
-            </h4>
-
-            <span>
-
-                Minutos
-
-            </span>
-
-        </div>
-
-        <div class="resumen-item">
-
-            <i class="fa-solid fa-layer-group"></i>
-
-            <h4>
-
-                ${cotizacion.detalles.length}
-
-            </h4>
-
-            <span>
-
-                Servicios
-
-            </span>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="detalle-seccion">
-
-    <div class="detalle-titulo">
-
-        Servicios
-
-    </div>
-
-    ${cotizacion.detalles.map(servicio=>`
-
-        <div class="servicio-card">
-
-            <h3>
-
-                ${servicio.servicio}
-
-            </h3>
+            <h2>${cotizacion.titulo}</h2>
 
             <p>
 
-                ${servicio.descripcion ?? ""}
+                ${cotizacion.descripcion}
 
             </p>
 
-            <div class="servicio-footer">
+        </div>
 
-                <span>
+        <div class="detalle-seccion">
 
-                    💰 $${parseFloat(servicio.costo).toLocaleString()}
+            <div class="detalle-titulo">
 
-                </span>
+                Cliente
 
-                <span>
+            </div>
 
-                    ⏱ ${servicio.tiempo} ${servicio.unidad_tiempo}
+            <div class="card-cliente">
 
-                </span>
+                <h3>
+
+                    ${cotizacion.cliente}
+
+                </h3>
+
+                <p>
+
+                    <i class="fa-solid fa-building"></i>
+
+                    ${cotizacion.empresa}
+
+                </p>
+
+                <p>
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                    ${cotizacion.correo}
+
+                </p>
+
+                <p>
+
+                    <i class="fa-solid fa-phone"></i>
+
+                    ${cotizacion.telefono}
+
+                </p>
 
             </div>
 
         </div>
 
-    `).join("")}
+        <div class="detalle-seccion">
 
-</div>
+            <div class="detalle-titulo">
 
-`;
+                Resumen
 
-abrirPanelDetalle();
+            </div>
 
+            <div class="resumen-grid">
 
+                <div class="resumen-item">
+
+                    <i class="fa-solid fa-dollar-sign"></i>
+
+                    <h4>
+
+                        $${parseFloat(cotizacion.costo_total).toLocaleString()}
+
+                    </h4>
+
+                    <span>
+
+                        Costo Total
+
+                    </span>
+
+                </div>
+                <div class="resumen-item">
+                    <i class="fa-solid fa-clock"></i>
+                    <h4>
+                        ${formatearTiempo(cotizacion.tiempo_total_minutos)}
+                    </h4>
+                    <span>
+                        Tiempo estimado
+                    </span>
+                </div>
+
+                <div class="resumen-item">
+
+                    <i class="fa-solid fa-layer-group"></i>
+
+                    <h4>
+
+                        ${cotizacion.detalles.length}
+
+                    </h4>
+
+                    <span>
+
+                        Servicios
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="detalle-seccion">
+
+            <div class="detalle-titulo">
+
+                Servicios
+
+            </div>
+
+            ${cotizacion.detalles.map(servicio=>`
+
+                <div class="servicio-card">
+
+                    <h3>
+
+                        ${servicio.servicio}
+
+                    </h3>
+
+                    <p>
+
+                        ${servicio.descripcion ?? ""}
+
+                    </p>
+
+                    <div class="servicio-footer">
+
+                        <span>
+
+                            💰 $${parseFloat(servicio.costo).toLocaleString()}
+
+                        </span>
+
+                        <span>
+
+                            ⏱ ${servicio.tiempo} ${servicio.unidad_tiempo}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            `).join("")}
+
+        </div>
+
+        `;
+
+        // ✅ GUARDAR EL ID EN EL BOTÓN PDF (AGREGAR ESTO)
+        const btnPDF = document.getElementById('btnGenerarPDF');
+        if (btnPDF) {
+            btnPDF.dataset.idCotizacion = id;
+        }
+
+        // ✅ ACTUALIZAR BADGE DE ESTATUS (AGREGAR ESTO)
+        const badge = document.getElementById('badgeEstatus');
+        if (badge && cotizacion.estatus) {
+            badge.textContent = cotizacion.estatus;
+            badge.className = 'badge-estatus ' + cotizacion.estatus.toLowerCase();
+        }
+
+        abrirPanelDetalle();
 
     }catch(error){
-
-
         console.error(error);
-
-
         mostrarToast(
             "Error al cargar cliente",
             "error"
         );
-
-
     }
-
-
 }
-
 
 async function confirmarEliminarCliente(){
 

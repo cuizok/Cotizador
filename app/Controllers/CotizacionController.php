@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../core/PDFHelper.php';
 
 class CotizacionController extends Controller
 {

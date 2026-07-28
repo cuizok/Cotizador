@@ -28,7 +28,7 @@
             <span>Dashboard</span>
         </a>
         
-        <a href="<?= BASE_URL ?>/Cliente" class="nav-link <?= $activePage === 'clientes' ? 'active' : '' ?>">
+        <a href="<?= BASE_URL ?>/Cliente" class="nav-link <?= $activePage === 'Cliente' ? 'active' : '' ?>">
             <i class="fa-solid fa-users"></i>
             <span>Clientes</span>
             <?php if (isset($totalClientes) && $totalClientes > 0): ?>
@@ -44,7 +44,7 @@
             <?php endif; ?>
         </a>
         
-        <a href="#" class="nav-link <?= $activePage === 'configuracion' ? 'active' : '' ?>">
+        <a href="<?= BASE_URL ?>/Ajustes" class="nav-link <?= $activePage === 'Ajustes' ? 'active' : '' ?>">
             <i class="fa-solid fa-gear"></i>
             <span>Ajustes de Presentación</span>
         </a>

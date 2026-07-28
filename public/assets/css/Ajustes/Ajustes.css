@@ -1,0 +1,408 @@
+/* ============================================
+   AJUSTES - ESTILOS (VERSIÓN LIMPIA)
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f4f5f9;
+    color: #17182b;
+    font-size: 13px;
+}
+
+/* ============================================
+   PÁGINA PRINCIPAL
+   ============================================ */
+
+.ajustes-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.ajustes-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #fff;
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    border: 1px solid #e7e8f0;
+    box-shadow: 0 1px 2px rgba(23, 24, 43, 0.04);
+}
+
+.btn-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid #e7e8f0;
+    background: #f8f9fc;
+    color: #4b4d63;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    font-size: 0.8rem;
+}
+
+.btn-icon:hover {
+    background: #eef0fb;
+    color: #4f46e5;
+}
+
+.ajustes-header-title {
+    flex: 1;
+}
+
+.ajustes-header-title h1 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #17182b;
+}
+
+.ajustes-header-title p {
+    font-size: 0.7rem;
+    color: #8b8da3;
+    margin-top: 2px;
+}
+
+.ajustes-header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid #e7e8f0;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.72rem;
+    color: #6b6d80;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.15s ease;
+}
+
+.btn-ghost:hover {
+    background: #f8f9fc;
+    color: #17182b;
+    border-color: #d7d8e4;
+}
+
+.btn-solid {
+    background: #1d2671;
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+    font-size: 0.72rem;
+    transition: all 0.2s ease;
+}
+
+.btn-solid:hover {
+    background: #151c55;
+    transform: translateY(-1px);
+}
+
+.btn-solid:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ============================================
+   CONTENIDO PRINCIPAL
+   ============================================ */
+
+.ajustes-content {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 1rem;
+    align-items: start;
+}
+
+/* ============================================
+   FORMULARIO
+   ============================================ */
+
+.ajustes-form {
+    background: #fff;
+    border: 1px solid #e7e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 1px 2px rgba(23, 24, 43, 0.04);
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.field-group label {
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: #6b6d80;
+    letter-spacing: 0.2px;
+}
+
+.field-group .required {
+    color: #ef4444;
+}
+
+.field-control {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid #e7e8f0;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    background: #fbfbfd;
+    color: #17182b;
+    transition: all 0.15s ease;
+}
+
+.field-control:hover {
+    border-color: #d7d8e4;
+}
+
+.field-control:focus {
+    outline: none;
+    border-color: #4f46e5;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+textarea.field-control {
+    resize: vertical;
+    min-height: 48px;
+    max-height: 150px;
+    font-family: inherit;
+    line-height: 1.5;
+}
+
+/* ============================================
+   PREVIEW LATERAL
+   ============================================ */
+
+.ajustes-preview {
+    position: sticky;
+    top: 1rem;
+}
+
+.preview-card {
+    background: #fff;
+    border: 1px solid #e7e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(23, 24, 43, 0.04);
+}
+
+.preview-card-head {
+    padding: 0.6rem 0.8rem;
+    background: #fafbfd;
+    border-bottom: 1px solid #edeef4;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #6b6d80;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.preview-card-head i {
+    color: #4f46e5;
+}
+
+.preview-body {
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    padding: 0.2rem 0;
+    border-bottom: 1px solid #f5f6fa;
+}
+
+.preview-item:last-child {
+    border-bottom: none;
+}
+
+.preview-item span {
+    color: #9092a8;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-shrink: 0;
+}
+
+.preview-item strong {
+    color: #17182b;
+    font-weight: 600;
+    text-align: right;
+    font-size: 0.7rem;
+    max-width: 140px;
+    word-break: break-word;
+}
+
+.preview-footer {
+    padding: 0.5rem 0.8rem;
+    background: #fafbfd;
+    border-top: 1px solid #edeef4;
+    font-size: 0.6rem;
+    color: #b0b2c2;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.preview-footer i {
+    color: #4f46e5;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .ajustes-content {
+        grid-template-columns: 1fr;
+    }
+    .ajustes-preview {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .ajustes-header {
+        flex-wrap: wrap;
+    }
+    .ajustes-header-actions {
+        width: 100%;
+        justify-content: flex-end;
+        order: 3;
+    }
+    .ajustes-form {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ajustes-header-title p {
+        display: none;
+    }
+    .btn-solid {
+        font-size: 0.65rem;
+        padding: 0.3rem 0.7rem;
+    }
+}
+
+/* ============================================
+   TOAST (Notificaciones)
+   ============================================ */
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 360px;
+}
+
+.toast {
+    padding: 12px 18px;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 500;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    animation: slideInRight 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toast-success {
+    background: #0d9d69;
+}
+
+.toast-error {
+    background: #ef4444;
+}
+
+.toast-warning {
+    background: #d68a10;
+}
+
+.toast-info {
+    background: #4f46e5;
+}
+
+.toast i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%) scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   SPINNER
+   ============================================ */
+
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

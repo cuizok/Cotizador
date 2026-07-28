@@ -191,24 +191,27 @@ href="<?= BASE_URL ?>/assets/css/Cotizaciones/Cotizacion.css">
 
 </div>
 
-<!-- PANEL DETALLE COTIZACIÓN -->
 
+<!-- PANEL DETALLE COTIZACIÓN -->
 <div id="panelDetalle" class="panel-detalle">
 
     <div class="panel-detalle-header">
-
-        <h2>Detalle de Cotización</h2>
-
-        <button id="cerrarPanelDetalle">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-
+        <div class="panel-detalle-header-left">
+            <h2>Detalle de Cotización</h2>
+            <span class="badge-estatus" id="badgeEstatus">PENDIENTE</span>
+        </div>
+        <div class="panel-detalle-header-right">
+            <button id="btnGenerarPDF" class="btn-pdf" data-id-cotizacion="">
+                <i class="fa-solid fa-file-pdf"></i> Generar PDF
+            </button>
+<button id="cerrarPanelDetalle" class="btn-cerrar" title="Cerrar panel">
+    <i class="fa-solid fa-xmark"></i>
+</button>
+        </div>
     </div>
 
     <div id="contenidoDetalle">
-
         <!-- aquí se carga todo -->
-
     </div>
 
 </div>

@@ -153,10 +153,10 @@ function agregarServicio() {
 
 function eliminarServicio(id) {
     // No permitir eliminar el último servicio
-    if (detalleServicios.length <= 1) {
+  /*  if (detalleServicios.length <= 1) {
         mostrarToast('Debe haber al menos un servicio', 'warning');
         return;
-    }
+    } */
 
     // Eliminar directamente del array
     detalleServicios = detalleServicios.filter(s => s.id !== id);
