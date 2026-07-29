@@ -14,50 +14,45 @@ class Router
         $this->routes['POST'][$uri] = $action;
     }
 
-        public function put($uri, $action)
+    public function put($uri, $action)
     {
         $this->routes['PUT'][$uri] = $action;
     }
 
-        public function delete($uri, $action)
+    public function delete($uri, $action)
     {
         $this->routes['DELETE'][$uri] = $action;
     }
-public function dispatch()
-{
-    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-    $basePath = '/Blackcore/Cotizador/public';
+    public function dispatch()
+    {
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-    if (strpos($uri, $basePath) === 0) {
-        $uri = substr($uri, strlen($basePath));
+        $basePath = '/Blackcore/Cotizador/public';
+
+        if (strpos($uri, $basePath) === 0) {
+            $uri = substr($uri, strlen($basePath));
+        }
+
+        if ($uri === '') {
+            $uri = '/';
+        }
+
+        $method = $_SERVER['REQUEST_METHOD'];
+
+        if (isset($this->routes[$method][$uri])) {
+            [$controller, $function] = explode('@', $this->routes[$method][$uri]);
+
+            require_once __DIR__ . "/../app/Controllers/$controller.php";
+
+            $controllerInstance = new $controller();
+
+            $controllerInstance->$function();
+        } else {
+            // Redirigir a la vista de error 404
+            require_once __DIR__ . "/../app/Controllers/ErrorController.php";
+            $errorController = new ErrorController();
+            $errorController->notFound();
+        }
     }
-
-    if ($uri === '') {
-        $uri = '/';
-    }
-
-    $method = $_SERVER['REQUEST_METHOD'];
-
-    if (isset($this->routes[$method][$uri])) {
-
-        [$controller, $function] = explode('@', $this->routes[$method][$uri]);
-
-        require_once __DIR__ . "/../app/Controllers/$controller.php";
-
-        $controllerInstance = new $controller();
-
-        $controllerInstance->$function();
-
-    } else {
-
-        http_response_code(404);
-
-        header('Content-Type: application/json');
-
-        echo json_encode([
-            "mensaje" => "Ruta no encontrada"
-        ]);
-    }
-}
 }

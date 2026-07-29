@@ -112,3 +112,9 @@ $router->get('/GenerarPDF', 'PDFController@generarPDF');
 // API DASHBOARD
 // ======================================================
 $router->get('/DashboardData', 'CotizacionController@dashboardData');
+
+
+// ======================================================
+// Vista Error 404
+// ======================================================
+$router->get('/404', 'ErrorController@notFound');
