@@ -222,7 +222,6 @@ document
 document
 .getElementById("overlayDetalle")
 .addEventListener("click",cerrarPanelDetalle);
-
 async function cargarCotizacionbyId(id){
     try{
         const response = await fetch(
@@ -403,15 +402,42 @@ async function cargarCotizacionbyId(id){
 
         </div>
 
+        <!-- ✅ NUEVA SECCIÓN: CARACTERÍSTICAS -->
+        ${cotizacion.caracteristicas && cotizacion.caracteristicas.length > 0 ? `
+        <div class="detalle-seccion">
+
+            <div class="detalle-titulo">
+
+                Características del Proyecto
+
+            </div>
+
+            <div class="caracteristicas-container">
+                ${cotizacion.caracteristicas.map(caracteristica=>`
+
+                    <div class="caracteristica-item">
+
+                        <i class="fa-solid fa-check-circle"></i>
+
+                        <span>${caracteristica.caracteristica}</span>
+
+                    </div>
+
+                `).join("")}
+            </div>
+
+        </div>
+        ` : ''}
+
         `;
 
-        // ✅ GUARDAR EL ID EN EL BOTÓN PDF (AGREGAR ESTO)
+        // ✅ GUARDAR EL ID EN EL BOTÓN PDF
         const btnPDF = document.getElementById('btnGenerarPDF');
         if (btnPDF) {
             btnPDF.dataset.idCotizacion = id;
         }
 
-        // ✅ ACTUALIZAR BADGE DE ESTATUS (AGREGAR ESTO)
+        // ✅ ACTUALIZAR BADGE DE ESTATUS
         const badge = document.getElementById('badgeEstatus');
         if (badge && cotizacion.estatus) {
             badge.textContent = cotizacion.estatus;

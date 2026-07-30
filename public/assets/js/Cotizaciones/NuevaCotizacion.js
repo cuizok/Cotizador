@@ -9,6 +9,7 @@
 // ============================================
 
 let detalleServicios = [];
+let detalleCaracteristicas = [];  
 let clientesList = [];
 let idClienteSeleccionado = null;
 
@@ -47,6 +48,8 @@ function inicializarEventos() {
     document.getElementById('btnVolver').addEventListener('click', () => {
         window.history.back();
     });
+
+    document.getElementById('btnAgregarCaracteristica').addEventListener('click', agregarCaracteristica);
 
     // Agregar servicio
     document.getElementById('btnAgregarServicio').addEventListener('click', agregarServicio);
@@ -92,6 +95,126 @@ function inicializarEventos() {
         }
     });
 }
+
+
+// ============================================
+// AGREGAR CARACTERÍSTICA
+// ============================================
+
+function agregarCaracteristica() {
+    const nuevaCaracteristica = {
+        id: Date.now(), // ID temporal
+        caracteristica: ''
+    };
+
+    detalleCaracteristicas.push(nuevaCaracteristica);
+    renderizarCaracteristicas();
+    actualizarVista();
+
+    // Enfocar el campo de la nueva card
+    requestAnimationFrame(() => {
+        const cards = document.querySelectorAll('.caracteristica-card');
+        const ultima = cards[cards.length - 1];
+        if (ultima) {
+            const input = ultima.querySelector('[data-field="caracteristica"]');
+            if (input) input.focus();
+        }
+    });
+}
+
+// ============================================
+// ELIMINAR CARACTERÍSTICA
+// ============================================
+
+function eliminarCaracteristica(id) {
+    const card = document.querySelector(`.caracteristica-card[data-id="${id}"]`);
+
+    const quitar = () => {
+        detalleCaracteristicas = detalleCaracteristicas.filter(c => c.id !== id);
+        renderizarCaracteristicas();
+        actualizarVista();
+    };
+
+    if (card) {
+        card.classList.add('removing');
+        card.addEventListener('animationend', quitar, { once: true });
+    } else {
+        quitar();
+    }
+}
+
+// ============================================
+// RENDERIZAR CARACTERÍSTICAS
+// ============================================
+
+function renderizarCaracteristicas() {
+    const contenedor = document.getElementById('tbodyCaracteristicas');
+
+    if (detalleCaracteristicas.length === 0) {
+        contenedor.innerHTML = `
+            <div class="caracteristica-vacio">
+                <i class="fa-solid fa-clipboard-list"></i>
+                Agrega características o alcances del proyecto
+            </div>
+        `;
+        actualizarContadorCaracteristicas();
+        return;
+    }
+
+    contenedor.innerHTML = detalleCaracteristicas.map((caracteristica, index) => `
+        <div class="caracteristica-card" data-id="${caracteristica.id}">
+            <div class="caracteristica-field">
+                <span class="mini-label">Característica</span>
+                <input
+                    type="text"
+                    class="input-caracteristica"
+                    value="${caracteristica.caracteristica}"
+                    data-index="${index}"
+                    data-field="caracteristica"
+                    placeholder="Ej: Sistema multiempresa, Reportes en tiempo real..."
+                >
+            </div>
+            <button class="btn-eliminar-caracteristica" title="Quitar característica">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>
+    `).join('');
+
+    // Eventos para actualizar datos en tiempo real
+    contenedor.querySelectorAll('.input-caracteristica').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            const field = e.target.dataset.field;
+            const value = e.target.value;
+
+            if (detalleCaracteristicas[index]) {
+                detalleCaracteristicas[index][field] = value;
+                actualizarVista();
+            }
+        });
+    });
+
+    // Event delegation para eliminar
+    contenedor.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-eliminar-caracteristica');
+        if (btn) {
+            const card = btn.closest('.caracteristica-card');
+            if (card) {
+                const id = parseInt(card.dataset.id);
+                if (!isNaN(id)) {
+                    eliminarCaracteristica(id);
+                }
+            }
+        }
+    });
+
+    actualizarContadorCaracteristicas();
+}
+
+function actualizarContadorCaracteristicas() {
+    document.getElementById('contadorCaracteristicas').textContent = detalleCaracteristicas.length;
+}
+
 
 // ============================================
 // CARGAR CLIENTES (API)
@@ -333,6 +456,10 @@ function actualizarVista() {
 
     const completados = [clienteOk, tituloOk, serviciosOk].filter(Boolean).length;
     actualizarStat('statProgreso', `${completados}/3`);
+
+    // ✅ Actualizar contador de características
+    const totalCaracteristicas = detalleCaracteristicas.length;
+    document.getElementById('contadorCaracteristicas').textContent = totalCaracteristicas;
 }
 
 function actualizarStat(id, valor) {
@@ -471,7 +598,12 @@ const data = {
 
         unidad_tiempo: servicio.unidad_tiempo
 
-    }))
+    })),
+           caracteristicas: detalleCaracteristicas.map(c => ({
+            caracteristica: c.caracteristica
+        }))
+
+
 
 };
 

@@ -8,7 +8,7 @@ class Middleware
             session_start();
         }
 
-        // ✅ Lista de rutas que NO requieren autenticación
+        // Lista de rutas que NO requieren autenticación
         $publicRoutes = [
             '/login',
             '/Login',
@@ -24,7 +24,7 @@ class Middleware
         $uri = rtrim($uri, '/');
         if (empty($uri)) $uri = '/';
 
-        // ✅ Si es una ruta pública, permitir acceso
+        // Si es una ruta pública, permitir acceso
         foreach ($publicRoutes as $route) {
             if (strpos($uri, $route) === 0) {
                 return;

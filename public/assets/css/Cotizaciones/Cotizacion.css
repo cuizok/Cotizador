@@ -1129,3 +1129,54 @@ PANEL DETALLE - VERSIÓN MEJORADA
         justify-content: flex-end;
     }
 }
+
+/* ============================================
+   CARACTERÍSTICAS DEL PROYECTO
+   ============================================ */
+
+.caracteristicas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.caracteristica-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.85rem;
+    color: #374151;
+}
+
+.caracteristica-item:last-child {
+    border-bottom: none;
+}
+
+.caracteristica-item i {
+    color: #22c55e;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* Opcional: si quieres que se vean en grid */
+.caracteristicas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 1.5rem;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.caracteristicas-grid .caracteristica-item {
+    border-bottom: none;
+    padding: 0.3rem 0;
+}

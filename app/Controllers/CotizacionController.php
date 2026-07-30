@@ -54,123 +54,55 @@ public function EditCotizacionView()
 
     }
     // Función para obtener registros por id
-    public function show()
-    {
+   public function show()
+{
     $id = $_GET['id'] ?? null;
 
     if (!$id) {
-
         http_response_code(400);
-
-        echo json_encode([
-            'mensaje' => 'ID requerido'
-        ]);
-
+        echo json_encode(['mensaje' => 'ID requerido']);
         return;
     }
 
     $cotizacion = new Cotizacion();
+    $registro = $cotizacion->obtenerPorId($id);
 
-$registro = $cotizacion->obtenerPorId($id);
+    if (!$registro) {
+        http_response_code(404);
+        echo json_encode(['mensaje' => 'Cotización no encontrada']);
+        return;
+    }
 
-if (!$registro) {
+    // Agregar servicios y características
+    $registro['detalles'] = $cotizacion->obtenerDetalles($id);
+    $registro['caracteristicas'] = $cotizacion->obtenerCaracteristicas($id); // ✅ NUEVO
 
-    http_response_code(404);
-
-    echo json_encode([
-        'mensaje' => 'Cotización no encontrada'
-    ]);
-
-    return;
+    header('Content-Type: application/json');
+    echo json_encode($registro, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 }
-
-// Agregar los servicios de la cotización
-$registro['detalles'] = $cotizacion->obtenerDetalles($id);
-
-header('Content-Type: application/json');
-
-echo json_encode(
-    $registro,
-    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
-);
-}
-
 public function store()
 {
+    $data = json_decode(file_get_contents("php://input"), true);
 
-    $data = json_decode(
-        file_get_contents("php://input"),
-        true
-    );
-
-    if (
-
-        empty($data["id_cliente"]) ||
-
-        empty($data["titulo"]) ||
-
-        empty($data["descripcion"])
-
-    ){
-
+    if (empty($data["id_cliente"]) || empty($data["titulo"]) || empty($data["descripcion"])) {
         http_response_code(400);
-
-        echo json_encode([
-            "mensaje"=>"Todos los datos son obligatorios."
-        ]);
-
+        echo json_encode(["mensaje" => "Todos los datos son obligatorios."]);
         return;
-
     }
 
     $cotizacion = new Cotizacion();
-
     $idCotizacion = $cotizacion->crear($data);
 
-    if(!$idCotizacion){
-
+    if (!$idCotizacion) {
         http_response_code(500);
-
-        echo json_encode([
-            "mensaje"=>"No fue posible crear la cotización."
-        ]);
-
+        echo json_encode(["mensaje" => "No fue posible crear la cotización."]);
         return;
-
     }
-
-    if(isset($data["detalles"])){
-
-        foreach($data["detalles"] as $detalle){
-
-            $cotizacion->insertarDetalle(
-
-                $idCotizacion,
-
-                $detalle
-
-            );
-
-        }
-
-    }
-
-    $cotizacion->recalcularCostoTotal(
-        $idCotizacion
-    );
-
-    $cotizacion->recalcularTiempoTotal(
-        $idCotizacion
-    );
 
     echo json_encode([
-
-        "mensaje"=>"Cotización creada correctamente.",
-
-        "id"=>$idCotizacion
-
+        "mensaje" => "Cotización creada correctamente.",
+        "id" => $idCotizacion
     ]);
-
 }
 
 

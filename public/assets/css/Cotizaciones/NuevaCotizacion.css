@@ -932,3 +932,108 @@ textarea.field-control {
         gap: 0.2rem;
     }
 }
+
+/* ============================================
+   LISTA DE CARACTERÍSTICAS
+   ============================================ */
+
+.caracteristicas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.caracteristica-vacio {
+    text-align: center;
+    padding: 1.4rem 1rem;
+    color: #9092a8;
+    border: 1.5px dashed #e7e8f0;
+    border-radius: 10px;
+    font-size: 0.72rem;
+}
+
+.caracteristica-vacio i {
+    font-size: 1.3rem;
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #c7c9da;
+}
+
+.caracteristica-card {
+    border: 1px solid #edeef4;
+    background: #fbfbfd;
+    border-radius: 10px;
+    padding: 0.5rem 0.55rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.4rem;
+    align-items: center;
+    animation: slideInCard 0.2s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.caracteristica-card:hover {
+    border-color: #d9dbee;
+    box-shadow: 0 2px 8px rgba(23, 24, 43, 0.05);
+}
+
+.caracteristica-card.removing {
+    animation: slideOutCard 0.18s ease forwards;
+}
+
+.caracteristica-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.caracteristica-field .mini-label {
+    font-size: 0.56rem;
+    color: #9092a8;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.input-caracteristica {
+    width: 100%;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid #e7e8f0;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    background: #fff;
+    color: #17182b;
+    height: 28px;
+    transition: all 0.15s ease;
+}
+
+.input-caracteristica:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.input-caracteristica::placeholder {
+    color: #c7c9da;
+}
+
+.btn-eliminar-caracteristica {
+    background: #fff;
+    border: 1px solid #f1d3d3;
+    color: #d75454;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    font-size: 0.68rem;
+}
+
+.btn-eliminar-caracteristica:hover {
+    background: #fef2f2;
+    border-color: #ef4444;
+    transform: scale(1.05);
+}

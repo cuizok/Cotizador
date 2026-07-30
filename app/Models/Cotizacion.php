@@ -133,8 +133,12 @@ class Cotizacion extends Model
 
 }
 
-    public function crear(array $data)
-    {
+public function crear(array $data)
+{
+    try {
+        $this->db->beginTransaction();
+
+        // 1. Insertar cotización
         $sql = "
             INSERT INTO cotizaciones
             (
@@ -151,15 +155,98 @@ class Cotizacion extends Model
         ";
 
         $stmt = $this->db->prepare($sql);
-
         $stmt->execute([
             ':id_cliente' => $data['id_cliente'],
             ':titulo' => $data['titulo'],
             ':descripcion' => $data['descripcion']
         ]);
 
-        return $this->db->lastInsertId();
+        $idCotizacion = $this->db->lastInsertId();
+
+        // 2. Insertar detalles (servicios)
+        if (isset($data['detalles'])) {
+            foreach ($data['detalles'] as $detalle) {
+                $this->insertarDetalle($idCotizacion, $detalle);
+            }
+        }
+
+        // 3. Insertar características
+        if (isset($data['caracteristicas'])) {
+            foreach ($data['caracteristicas'] as $caracteristica) {
+                if (!empty($caracteristica['caracteristica'])) {
+                    $this->insertarCaracteristica($idCotizacion, $caracteristica['caracteristica']);
+                }
+            }
+        }
+
+        // 4. Recalcular totales
+        $costoTotal = $this->recalcularCostoTotal($idCotizacion);
+        $tiempoTotalMinutos = $this->recalcularTiempoTotal($idCotizacion);
+
+        // 5. Actualizar totales en la cotización
+        $sql = "
+            UPDATE cotizaciones
+            SET
+                costo_total = :costo_total,
+                tiempo_total_minutos = :tiempo_total_minutos
+            WHERE id = :id
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':id' => $idCotizacion,
+            ':costo_total' => $costoTotal,
+            ':tiempo_total_minutos' => $tiempoTotalMinutos
+        ]);
+
+        $this->db->commit();
+
+        return $idCotizacion;
+
+    } catch (PDOException $e) {
+        $this->db->rollBack();
+        error_log("Error al crear cotización: " . $e->getMessage());
+        return false;
     }
+}
+
+    // NUEVO MÉTODO PARA INSERTAR CARACTERÍSTICAS
+public function insertarCaracteristica($idCotizacion, $caracteristica)
+{
+    $sql = "
+        INSERT INTO caracteristicas_cotizaciones
+        (
+            idCotizacion,
+            caracteristica
+        )
+        VALUES
+        (
+            :idCotizacion,
+            :caracteristica
+        )
+    ";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([
+        ':idCotizacion' => $idCotizacion,
+        ':caracteristica' => $caracteristica
+    ]);
+}
+
+// OBTENER CARACTERÍSTICAS DE UNA COTIZACIÓN
+public function obtenerCaracteristicas($idCotizacion)
+{
+    $sql = "
+        SELECT id, caracteristica
+        FROM caracteristicas_cotizaciones
+        WHERE idCotizacion = :idCotizacion
+        ORDER BY id
+    ";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([':idCotizacion' => $idCotizacion]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
     
 
      

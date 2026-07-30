@@ -120,7 +120,22 @@ href="<?= BASE_URL ?>/assets/css/Cotizaciones/NuevaCotizacion.css"
             </div>
 
         </div>
-
+<!-- ✅ NUEVA MINI-CARD: CARACTERÍSTICAS -->
+<div class="mini-card">
+    <div class="mini-card-head">
+        <span class="mini-card-num">Paso 3</span>
+        <h2><i class="fa-solid fa-clipboard-list"></i> Características</h2>
+        <span class="chip-count" id="contadorCaracteristicas">0</span>
+    </div>
+    <div class="mini-card-body">
+        <div class="caracteristicas-list" id="tbodyCaracteristicas">
+            <!-- Cards dinámicas de características -->
+        </div>
+        <button id="btnAgregarCaracteristica" class="btn-add-service">
+            <i class="fa-solid fa-plus"></i> Agregar característica
+        </button>
+    </div>
+</div>
         <!-- Panel lateral -->
         <aside class="cot-side">
             <div class="side-card">
