@@ -9,6 +9,7 @@
 // ============================================
 
 let detalleServicios = [];
+let detalleCaracteristicas = []; // ✅ NUEVO
 let clientesList = [];
 let cotizacionOriginal = null;
 
@@ -35,7 +36,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await cargarClientes();
     await cargarCotizacion();
     inicializarEventos();
-    // Forzar actualización después de cargar
     setTimeout(actualizarResumen, 100);
 });
 
@@ -77,8 +77,14 @@ async function cargarCotizacion() {
         // --- Servicios ---
         detalleServicios = cotizacion.detalles || [];
 
-        // Renderizar servicios en el mismo formato que Nueva Cotización
+        // ✅ --- Características ---
+        detalleCaracteristicas = cotizacion.caracteristicas || [];
+
+        // Renderizar servicios
         renderizarServicios();
+
+        // ✅ Renderizar características
+        renderizarCaracteristicas();
 
         // Actualizar todo el dashboard
         actualizarResumen();
@@ -122,7 +128,7 @@ async function cargarClientes() {
 }
 
 // ============================================
-// RENDERIZAR SERVICIOS (Mismo formato que Nueva Cotización)
+// RENDERIZAR SERVICIOS
 // ============================================
 
 function renderizarServicios() {
@@ -202,7 +208,7 @@ function renderizarServicios() {
                     `).join('')}
                 </select>
             </div>
-            <button class="btn-eliminar-fila" title="Quitar servicio" onclick="eliminarServicio(${index})">
+            <button class="btn-eliminar-fila" title="Quitar servicio">
                 <i class="fa-solid fa-trash"></i>
             </button>
         </div>
@@ -235,12 +241,101 @@ function renderizarServicios() {
         });
     });
 
+    // Event delegation para eliminar servicios
+    contenedor.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-eliminar-fila');
+        if (btn) {
+            const card = btn.closest('.servicio-card');
+            if (card) {
+                const index = parseInt(card.dataset.index);
+                if (!isNaN(index)) {
+                    eliminarServicio(index);
+                }
+            }
+        }
+    });
+
     actualizarContador();
 }
 
 function actualizarContador() {
     const contador = document.getElementById('contadorServicios');
     if (contador) contador.textContent = detalleServicios.length;
+}
+
+// ============================================
+// RENDERIZAR CARACTERÍSTICAS ✅ NUEVO
+// ============================================
+function renderizarCaracteristicas() {
+    const contenedor = document.getElementById('tbodyCaracteristicas');
+
+    if (!contenedor) {
+        console.warn('Contenedor de características no encontrado');
+        return;
+    }
+
+    if (detalleCaracteristicas.length === 0) {
+        contenedor.innerHTML = `
+            <div class="caracteristica-vacio">
+                <i class="fa-solid fa-clipboard-list"></i>
+                Agrega características o alcances del proyecto
+            </div>
+        `;
+        actualizarContadorCaracteristicas();
+        return;
+    }
+
+    contenedor.innerHTML = detalleCaracteristicas.map((caracteristica, index) => `
+        <div class="caracteristica-card" data-index="${index}">
+            <div class="caracteristica-field">
+                <span class="mini-label">Característica</span>
+                <input
+                    type="text"
+                    class="input-caracteristica"
+                    value="${caracteristica.caracteristica || ''}"
+                    data-index="${index}"
+                    data-field="caracteristica"
+                    placeholder="Ej: Sistema multiempresa, Reportes en tiempo real..."
+                >
+            </div>
+            <button class="btn-eliminar-caracteristica" data-index="${index}" title="Quitar característica">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>
+    `).join('');
+
+    // Eventos para actualizar datos en tiempo real
+    contenedor.querySelectorAll('.input-caracteristica').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            const field = e.target.dataset.field;
+            const value = e.target.value;
+
+            if (detalleCaracteristicas[index]) {
+                detalleCaracteristicas[index][field] = value;
+                actualizarResumen();
+            }
+        });
+    });
+
+    // ✅ Event delegation para eliminar características (usando data-index)
+    contenedor.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-eliminar-caracteristica');
+        if (btn) {
+            const index = parseInt(btn.dataset.index);
+            if (!isNaN(index)) {
+                eliminarCaracteristica(index);
+            }
+        }
+    });
+
+    actualizarContadorCaracteristicas();
+}
+
+
+function actualizarContadorCaracteristicas() {
+    const contador = document.getElementById('contadorCaracteristicas');
+    if (contador) contador.textContent = detalleCaracteristicas.length;
 }
 
 // ============================================
@@ -261,7 +356,6 @@ function agregarServicio() {
     renderizarServicios();
     actualizarResumen();
 
-    // Enfocar el primer campo de la nueva card
     requestAnimationFrame(() => {
         const cards = document.querySelectorAll('.servicio-card');
         const ultima = cards[cards.length - 1];
@@ -274,6 +368,30 @@ function agregarServicio() {
     mostrarToast('Servicio agregado', 'success');
 }
 
+// ============================================
+// AGREGAR CARACTERÍSTICA ✅ NUEVO
+// ============================================
+function agregarCaracteristica() {
+    const nuevaCaracteristica = {
+        id: Date.now(),
+        caracteristica: ''
+    };
+
+    detalleCaracteristicas.push(nuevaCaracteristica);
+    renderizarCaracteristicas();
+    actualizarResumen();
+
+    requestAnimationFrame(() => {
+        const cards = document.querySelectorAll('.caracteristica-card');
+        const ultima = cards[cards.length - 1];
+        if (ultima) {
+            const input = ultima.querySelector('[data-field="caracteristica"]');
+            if (input) input.focus();
+        }
+    });
+
+    mostrarToast('Característica agregada', 'success');
+}
 // ============================================
 // ELIMINAR SERVICIO
 // ============================================
@@ -295,6 +413,27 @@ function eliminarServicio(index) {
         renderizarServicios();
         actualizarResumen();
         mostrarToast('Servicio eliminado', 'info');
+    };
+
+    if (card) {
+        card.classList.add('removing');
+        card.addEventListener('animationend', quitar, { once: true });
+    } else {
+        quitar();
+    }
+}
+
+// ============================================
+// ELIMINAR CARACTERÍSTICA ✅ NUEVO
+// ============================================
+function eliminarCaracteristica(index) {
+    const card = document.querySelector(`.caracteristica-card[data-index="${index}"]`);
+    
+    const quitar = () => {
+        detalleCaracteristicas.splice(index, 1);
+        renderizarCaracteristicas();
+        actualizarResumen();
+        mostrarToast('Característica eliminada', 'info');
     };
 
     if (card) {
@@ -345,6 +484,9 @@ function inicializarEventos() {
     // --- Agregar Servicio ---
     document.getElementById("btnAgregarServicio")?.addEventListener("click", agregarServicio);
 
+    // ✅ --- Agregar Característica ---
+    document.getElementById("btnAgregarCaracteristica")?.addEventListener("click", agregarCaracteristica);
+
     // --- Cancelar ---
     document.getElementById("btnCancelar")?.addEventListener("click", () => {
         if (hayCambios()) {
@@ -364,7 +506,6 @@ function inicializarEventos() {
 // ============================================
 
 function hayCambios() {
-    // Verificar si hay cambios en campos simples
     const tituloActual = document.getElementById("titulo").value.trim();
     const descActual = document.getElementById("descripcion").value.trim();
     const clienteActual = document.getElementById("cliente").value;
@@ -391,11 +532,23 @@ function hayCambios() {
         }
     }
 
+    // ✅ Verificar cambios en características
+    if (cotizacionOriginal && cotizacionOriginal.caracteristicas) {
+        if (detalleCaracteristicas.length !== cotizacionOriginal.caracteristicas.length) return true;
+        
+        for (let i = 0; i < detalleCaracteristicas.length; i++) {
+            const original = cotizacionOriginal.caracteristicas[i];
+            const actual = detalleCaracteristicas[i];
+            if (!original || !actual) return true;
+            if (original.caracteristica !== actual.caracteristica) return true;
+        }
+    }
+
     return false;
 }
 
 // ============================================
-// ACTUALIZAR RESUMEN (Dashboard)
+// ACTUALIZAR RESUMEN
 // ============================================
 
 function actualizarResumen() {
@@ -408,11 +561,9 @@ function actualizarResumen() {
         totalMinutos += (Number(servicio.tiempo) || 0) * minutos;
     });
 
-    // Actualizar contador de servicios
     const totalServicios = detalleServicios.length;
     document.getElementById("contadorServicios").textContent = totalServicios;
 
-    // Actualizar stats
     document.getElementById("statServicios").textContent = totalServicios;
 
     document.getElementById("statCosto").textContent = 
@@ -427,7 +578,9 @@ function actualizarResumen() {
     document.getElementById("statProgreso").textContent = 
         calcularProgreso();
 
-    // Actualizar checklist
+    // ✅ Actualizar contador de características
+    document.getElementById("contadorCaracteristicas").textContent = detalleCaracteristicas.length;
+
     actualizarChecklist();
 }
 
@@ -503,12 +656,10 @@ function formatearTiempo(totalMinutos) {
 }
 
 // ============================================
-// ACTUALIZAR COTIZACIÓN (Guardar cambios)
+// ACTUALIZAR COTIZACIÓN
 // ============================================
-// EditarCotizacion.js
 
 async function actualizarCotizacion() {
-    // Validaciones
     const clienteId = document.getElementById("cliente").value;
     const titulo = document.getElementById("titulo").value.trim();
 
@@ -524,13 +675,6 @@ async function actualizarCotizacion() {
         return;
     }
 
-    /*
-    if (detalleServicios.length === 0) {
-        mostrarToast('Agrega al menos un servicio', 'error');
-        return;
-    }
-*/
-    // Verificar servicios sin nombre
     const serviciosIncompletos = detalleServicios.filter(s => !s.servicio.trim());
     if (serviciosIncompletos.length > 0) {
         mostrarToast('Todos los servicios deben tener un nombre', 'error');
@@ -548,6 +692,10 @@ async function actualizarCotizacion() {
             costo: Number(s.costo) || 0,
             tiempo: Number(s.tiempo) || 0,
             unidad_tiempo: s.unidad_tiempo
+        })),
+        // ✅ AGREGAR CARACTERÍSTICAS
+        caracteristicas: detalleCaracteristicas.map(c => ({
+            caracteristica: c.caracteristica.trim()
         }))
     };
 
@@ -572,10 +720,7 @@ async function actualizarCotizacion() {
 
         if (response.ok) {
             mostrarToast(result.mensaje || 'Cotización actualizada exitosamente', 'success');
-            
-            // Recargar la cotización para mostrar los totales recalculados
             await cargarCotizacion();
-            
             setTimeout(() => {
                 window.location.href = '/Blackcore/Cotizador/public/Cotizaciones';
             }, 1500);
@@ -635,3 +780,5 @@ function mostrarToast(mensaje, tipo = 'info') {
 
 window.eliminarServicio = eliminarServicio;
 window.agregarServicio = agregarServicio;
+window.eliminarCaracteristica = eliminarCaracteristica;
+window.agregarCaracteristica = agregarCaracteristica;

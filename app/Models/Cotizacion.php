@@ -249,13 +249,12 @@ public function obtenerCaracteristicas($idCotizacion)
 }
     
 
-     
-public function actualizar($id, array $data) {
+ public function actualizar($id, array $data) {
     try {
         // Iniciar transacción
         $this->db->beginTransaction();
 
-        // 1. Actualizar los detalles (si vienen en la data)
+        // 1. Actualizar los detalles (servicios)
         if (isset($data['detalles']) && is_array($data['detalles'])) {
             // Eliminar detalles existentes
             $sql = "DELETE FROM detalle_cotizacion WHERE id_cotizacion = :id";
@@ -281,18 +280,42 @@ public function actualizar($id, array $data) {
             }
         }
 
-        // 2. Recalcular totales automáticamente
+        // ✅ 2. Actualizar características
+        if (isset($data['caracteristicas']) && is_array($data['caracteristicas'])) {
+            // Eliminar características existentes
+            $sql = "DELETE FROM caracteristicas_cotizaciones WHERE idCotizacion = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id' => $id]);
+
+            // Insertar nuevas características (solo las que no estén vacías)
+            foreach ($data['caracteristicas'] as $caracteristica) {
+                if (!empty($caracteristica['caracteristica'])) {
+                    $sql = "INSERT INTO caracteristicas_cotizaciones 
+                            (idCotizacion, caracteristica) 
+                            VALUES 
+                            (:idCotizacion, :caracteristica)";
+                    
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->execute([
+                        ':idCotizacion' => $id,
+                        ':caracteristica' => $caracteristica['caracteristica']
+                    ]);
+                }
+            }
+        }
+
+        // 3. Recalcular totales automáticamente
         $costoTotal = $this->recalcularCostoTotal($id);
         $tiempoTotalMinutos = $this->recalcularTiempoTotal($id);
 
-        // 3. Actualizar la cotización - SIEMPRE BORRADOR
+        // 4. Actualizar la cotización - SIEMPRE BORRADOR
         $sql = "
             UPDATE cotizaciones
             SET
                 id_cliente = :id_cliente,
                 titulo = :titulo,
                 descripcion = :descripcion,
-                estatus = 'BORRADOR',  -- ← SIEMPRE BORRADOR
+                estatus = 'BORRADOR',
                 costo_total = :costo_total,
                 tiempo_total_minutos = :tiempo_total_minutos,
                 updated_at = NOW()
@@ -312,7 +335,7 @@ public function actualizar($id, array $data) {
         // Confirmar transacción
         $this->db->commit();
 
-        return $stmt->rowCount() > 0;
+        return true;
 
     } catch (PDOException $e) {
         // Revertir en caso de error
